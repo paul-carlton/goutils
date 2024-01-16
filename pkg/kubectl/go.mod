@@ -5,9 +5,9 @@ go 1.15
 require (
 	github.com/go-logr/logr v0.4.0
 	github.com/golang/mock v1.5.0
-	github.com/paul-carlton/goutils/pkg/logging v0.0.1
-	github.com/paul-carlton/goutils/pkg/mocks/kubectl v0.0.1
-	github.com/paul-carlton/goutils/pkg/mocks/logr v0.0.1
+	github.com/paul-carlton/goutils/pkg/logging v0.1.5
+	github.com/paul-carlton/goutils/pkg/mocks/kubectl v0.1.5
+	github.com/paul-carlton/goutils/pkg/mocks/logr v0.1.5
 	github.com/pkg/errors v0.9.1
 )
 
