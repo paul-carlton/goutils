@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Set versions of software required
-linter_version=1.30.0
-mockgen_version=v1.4.4
+linter_version=1.55.2
+mockgen_version=v0.4.0
 
 function usage()
 {
@@ -33,7 +33,8 @@ if [ $? -eq 0 ]; then
 fi
 
 echo "Running setup script to setup software"
-GO111MODULE=on go get mvdan.cc/gofumpt/gofumports
+GO111MODULE=auto go install mvdan.cc/gofumpt@latest
+
 
 golangci-lint --version 2>&1 | grep $linter_version >/dev/null
 ret_code="${?}"
@@ -54,7 +55,7 @@ mockgen -version 2>&1 | grep ${mockgen_version} >/dev/null
 ret_code="${?}"
 if [[ "${ret_code}" != "0" ]] ; then
     echo "installing mockgen version: ${mockgen_version}"
-    GO111MODULE=on go get github.com/golang/mock/mockgen@${mockgen_version}
+    go install go.uber.org/mock/mockgen@${mockgen_version}
     mockgen -version 2>&1 | grep ${mockgen_version} >/dev/null
     ret_code="${?}"
     if [ "${ret_code}" != "0" ] ; then

@@ -55,27 +55,26 @@ ${BUILD_DIR}:
 	mkdir -p $@
 
 clean-${PROJECT}-check:
-	$(foreach target,${GO_CHECK_PACKAGES},
+	$(foreach target,${GO_CHECK_PACKAGES},\
 		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk clean;)
 
 ${PROJECT}-check: ${GO_CHECK_PACKAGES}
 	$(foreach target,${GO_CHECK_PACKAGES},$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk;)
 
 clean-gomod:
-	$(foreach target,${GO_CHECK_PACKAGES},
-		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk clean-gomod;)
+	$(foreach target,${GO_CHECK_PACKAGES},$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk clean-gomod;)
 
 gomod-update:
-	$(foreach target,${GO_CHECK_PACKAGES},
+	$(foreach target,${GO_CHECK_PACKAGES},\
 		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk gomod-update;)
 
 gomod:
-	$(foreach target,${GO_CHECK_PACKAGES},
+	$(foreach target,${GO_CHECK_PACKAGES},\
 		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk gomod;)
 
 # Generate code
 go-generate: ${GO_CHECK_PACKAGES}
-	$(foreach target,${GO_CHECK_PACKAGES},
+	$(foreach target,${GO_CHECK_PACKAGES},\
 		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk go-generate;)
 
 clean-${PROJECT}-build:

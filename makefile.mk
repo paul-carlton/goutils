@@ -13,7 +13,7 @@ COVERAGE_ARTIFACT:=${COVERAGE_HTML_DIR}/main.html
 LINT_ARTIFACT:=._gometalinter
 TEST_ARTIFACT:=${COVERAGE_DIR}/coverage.out
 BASH_ARTIFACT:=._shellcheck
-GOMOD_ARTIFACT:=_gomod
+GOMOD_ARTIFACT:=._gomod
 
 YELLOW:=\033[0;33m
 GREEN:=\033[0;32m
@@ -30,6 +30,8 @@ NC_DIR:=: $(CURDIR)$(NC)
 all: gomod-update lint coverage go-generate
 clean: clean-lint clean-coverage clean-test clean-gomod
 
+clean-gomod:
+	rm -rf ${GOMOD_ARTIFACT}
 
 goimports: ${GO_SOURCES}
 	echo "${YELLOW}Running goimports${NC_DIR}" && \
