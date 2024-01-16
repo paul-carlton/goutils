@@ -1,5 +1,5 @@
-module github.com/paulcarlton-ww/goutils/pkg/httpserver
+module github.com/paul-carlton/goutils/pkg/httpserver
 
-go 1.16
+go 1.21
 
-require github.com/sirupsen/logrus v1.8.1
+require github.com/sirupsen/logrus v1.9.3

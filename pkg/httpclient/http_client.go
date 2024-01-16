@@ -16,7 +16,7 @@ import (
 	"github.com/go-logr/logr"
 	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 
-	"github.com/paulcarlton-ww/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 const (

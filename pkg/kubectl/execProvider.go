@@ -24,7 +24,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/paulcarlton-ww/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 	"github.com/pkg/errors"
 )
 

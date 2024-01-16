@@ -18,7 +18,7 @@ PROJECT_SOURCES:=$(shell find ./pkg/ -regex '.*.\.\(go\|json\)$$')
 BUILD_DIR:=build/
 export DOCKER_BUILD_PROXYS?="--build-arg HTTP_PROXY=${HTTP_PROXY} --build-arg HTTPS_PROXY=${HTTPS_PROXY}"
 
-ALL_GO_PACKAGES:=$(shell find ${CURDIR}/pkg/ \
+ALL_GO_PACKAGES:=$(shell find ${CURDIR}/pkg \
 	-type f -name \*.go -exec dirname {} \; | sort --uniq)
 GO_CHECK_PACKAGES:=$(shell echo $(subst $() $(),\\n,$(ALL_GO_PACKAGES)) | \
 	awk '{print $$0}')
@@ -59,8 +59,7 @@ clean-${PROJECT}-check:
 		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk clean;)
 
 ${PROJECT}-check: ${GO_CHECK_PACKAGES}
-	$(foreach target,${GO_CHECK_PACKAGES},
-		$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk;)
+	$(foreach target,${GO_CHECK_PACKAGES},$(MAKE) -C ${target} --makefile=${CURDIR}/makefile.mk;)
 
 clean-gomod:
 	$(foreach target,${GO_CHECK_PACKAGES},

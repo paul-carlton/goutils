@@ -14,7 +14,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/kylelemons/godebug/diff"
 
-	"github.com/paulcarlton-ww/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 // Test utilities

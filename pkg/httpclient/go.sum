@@ -291,8 +291,8 @@ github.com/onsi/gomega v1.10.1/go.mod h1:iN09h71vgCQne3DLsj+A5owkum+a2tYe+TOCB1y
 github.com/onsi/gomega v1.13.0 h1:7lLHu94wT9Ij0o6EWWclhu0aOh32VxhkwEJvzuWPeak=
 github.com/onsi/gomega v1.13.0/go.mod h1:lRk9szgn8TxENtWd0Tp4c3wjlRfMTMH27I+3Je41yGY=
 github.com/pascaldekloe/goe v0.0.0-20180627143212-57f6aae5913c/go.mod h1:lzWF7FIEvWOWxwDKqyGYQf6ZUaNfKdP144TG7ZOy1lc=
-github.com/paulcarlton-ww/goutils/pkg/logging v0.0.4 h1:z1Vr4RZhlsHSZM4FxFzqjUYjT013jETpUoglsPLr2rw=
-github.com/paulcarlton-ww/goutils/pkg/logging v0.0.4/go.mod h1:1RiGP4/W9XmhfTxJhL1OCBV023Tm/nKDF8pYVXiFaKk=
+github.com/paul-carlton/goutils/pkg/logging v0.0.4 h1:z1Vr4RZhlsHSZM4FxFzqjUYjT013jETpUoglsPLr2rw=
+github.com/paul-carlton/goutils/pkg/logging v0.0.4/go.mod h1:1RiGP4/W9XmhfTxJhL1OCBV023Tm/nKDF8pYVXiFaKk=
 github.com/pelletier/go-toml v1.2.0/go.mod h1:5z9KED0ma1S8pY6P1sdut58dfprrGBbd/94hg7ilaic=
 github.com/peterbourgon/diskv v2.0.1+incompatible/go.mod h1:uqqh8zWWbv1HBMNONnaR/tNboyR3/BZd58JJSHlUSCU=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=

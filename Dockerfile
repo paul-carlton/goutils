@@ -1,7 +1,7 @@
 FROM golang:1.14 as builder
 
 ARG VERSION
-WORKDIR /go/src/github.com/paulcarlton-ww/goutils
+WORKDIR /go/src/github.com/paul-carlton/goutils
 COPY . .
 #ENV GOPROXY=direct
 RUN bin/setup.sh

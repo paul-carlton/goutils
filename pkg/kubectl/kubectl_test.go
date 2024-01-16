@@ -47,9 +47,9 @@ import (
 	testlogr "github.com/go-logr/logr/testing"
 	gomock "github.com/golang/mock/gomock"
 
-	"github.com/paulcarlton-ww/goutils/pkg/kubectl"
-	mocks "github.com/paulcarlton-ww/goutils/pkg/mocks/kubectl"
-	mocklogr "github.com/paulcarlton-ww/goutils/pkg/mocks/logr"
+	"github.com/paul-carlton/goutils/pkg/kubectl"
+	mocks "github.com/paul-carlton/goutils/pkg/mocks/kubectl"
+	mocklogr "github.com/paul-carlton/goutils/pkg/mocks/logr"
 )
 
 var (

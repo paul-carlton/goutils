@@ -1,4 +1,4 @@
-module github.com/paulcarlton-ww/goutils/pkg/mocks/logr
+module github.com/paul-carlton/goutils/pkg/mocks/logr
 
 go 1.15
 

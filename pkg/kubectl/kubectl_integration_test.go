@@ -1,3 +1,4 @@
+//go:build integration
 // +build integration
 
 package kubectl_test
@@ -41,7 +42,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/paulcarlton-ww/goutils/pkg/kubectl"
+	"github.com/paul-carlton/goutils/pkg/kubectl"
 
 	testlogr "github.com/go-logr/logr/testing"
 )

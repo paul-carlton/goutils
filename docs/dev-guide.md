@@ -4,11 +4,11 @@ This repository contains testing and development utilities.
 
 ## Setup
 
-clone into $GOPATH/src/github.com/paulcarlton-ww/goutils:
+clone into $GOPATH/src/github.com/paul-carlton/goutils:
 
-    mkdir -p $GOPATH/src/github.com/paulcarlton-ww
-    cd $GOPATH/src/github.com/paulcarlton-ww
-    git clone git@github.com:paulcarlton-ww/goutils.git
+    mkdir -p $GOPATH/src/github.com/paul-carlton
+    cd $GOPATH/src/github.com/paul-carlton
+    git clone git@github.com:paul-carlton/goutils.git
     cd goutils
 
 This project requires the following software:
