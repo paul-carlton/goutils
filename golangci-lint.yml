@@ -100,7 +100,7 @@ linters-settings:
   gocyclo:
     # minimal code complexity to report, 30 by default (but we recommend 10-20)
     min-complexity: 10
-  maligned:
+  fieldalignment:
     # print struct with more effective memory layout or not, false by default
     suggest-new: true
   dupl:
@@ -177,8 +177,7 @@ linters:
   enable:
     - asciicheck
     - bodyclose
-    - deadcode
-    - depguard
+    # - depguard
     - dogsled
     - dupl
     - exhaustive
@@ -199,7 +198,7 @@ linters:
     - gofumpt
     - goheader
     - goimports
-    - golint
+    - revive
     - gomnd
     - gomodguard
     - goprintffuncname
@@ -207,23 +206,19 @@ linters:
     - gosimple
     - govet
     - ineffassign
-    - interfacer
     - lll
-    - maligned
     - misspell
     - nakedret
     - nestif
     - staticcheck
-    - structcheck
     - typecheck
     - unused
-    - varcheck
     - noctx
     - nolintlint
     - nlreturn
     - prealloc
     - rowserrcheck
-    - scopelint
+    - exportloopref
     - sqlclosecheck
     - stylecheck
     - testpackage

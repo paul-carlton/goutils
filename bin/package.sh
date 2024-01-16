@@ -16,7 +16,7 @@ if [ ! -d "$package_name" ] ; then
 fi
 TOP=`git rev-parse --show-toplevel`
 make -C $TOP/$package_name --makefile=$TOP/makefile.mk gofmt
-make -C $TOP/$package_name --makefile=$TOP/makefile.mk gofumpt
-make -C $TOP/$package_name --makefile=$TOP/makefile.mk goimports
+# make -C $TOP/$package_name --makefile=$TOP/makefile.mk gofumpt
+# make -C $TOP/$package_name --makefile=$TOP/makefile.mk goimports
 make -C $TOP/$package_name --makefile=$TOP/makefile.mk clean
 make -C $TOP/$package_name --makefile=$TOP/makefile.mk

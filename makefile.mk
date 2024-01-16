@@ -81,10 +81,7 @@ lint: ${LINT_ARTIFACT}
 ${LINT_ARTIFACT}: ${MAKEFILE_PATH}/golangci-lint.yml ${GO_SOURCES}
 	echo "${YELLOW}Running go lint${NC_DIR}" && \
 	(cd $(CURDIR) && \
-	 procs=$$(expr $$( \
-		(grep -c ^processor /proc/cpuinfo || \
-		 sysctl -n hw.ncpu || \
-		 echo 1) 2>/dev/null) '*' 2 '-' 1) && \
+	 procs=$$(expr $$(4 '*' 2 '-' 1)) && \
 	GOPROXY=https://proxy.golang.org,direct \
 	golangci-lint run \
 		--config ${MAKEFILE_PATH}/golangci-lint.yml \
@@ -92,7 +89,7 @@ ${LINT_ARTIFACT}: ${MAKEFILE_PATH}/golangci-lint.yml ${GO_SOURCES}
 		--path-prefix "$$(realpath --relative-to ${MAKEFILE_PATH} ${CURDIR})/." \
 		.) && \
 	touch $@ && \
-	cd ${MAKEFILE_PATH}
+	cd ${MAKEFILE_PATH} && \
 
 go.mod:
 	go mod tidy

@@ -17,6 +17,10 @@ import (
 	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
+const (
+	mb = 1024 * 1024
+)
+
 // Test utilities
 
 // CopyObjectStatus copys an ObjectStatus object leaving Fields element empty.
@@ -311,7 +315,7 @@ func ReadBuf(out io.Reader) *[]string {
 	output := []string{}
 
 	for {
-		p := make([]byte, 1024000)
+		p := make([]byte, mb)
 		n, err := out.Read(p)
 
 		if n > 0 {
@@ -438,12 +442,12 @@ func CheckNotNil(u TestUtil, name string, a, e interface{}) bool {
 }
 
 // CompareJSON compares values by converting to json.
-func CompareJSON(u TestUtil, name string, actual, expected interface{}) bool {
+func CompareJSON(u TestUtil, _ string, actual, expected interface{}) bool {
 	return CompareAsJSON(u.Testing(), actual, expected)
 }
 
 // CompareReflectDeepEqual compares values using reflect.DeepEqual().
-func CompareReflectDeepEqual(u TestUtil, name string, actual, expected interface{}) bool {
+func CompareReflectDeepEqual(actual, expected interface{}) bool {
 	return reflect.DeepEqual(actual, expected)
 }
 

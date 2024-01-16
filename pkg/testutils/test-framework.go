@@ -210,7 +210,7 @@ func (u *testUtil) ResultsComparer() bool {
 	passed := false
 
 	if test.ResultsCompareFunc == nil {
-		passed = CompareReflectDeepEqual(u, "", test.Results, test.Expected)
+		passed = CompareReflectDeepEqual(test.Results, test.Expected)
 	} else {
 		passed = test.ResultsCompareFunc(u, "", test.Results, test.Expected)
 	}
@@ -225,7 +225,7 @@ func (u *testUtil) ResultsComparer() bool {
 func (u *testUtil) FieldComparer(name string, actual, expected interface{}) bool {
 	test := u.TestData()
 	if test.FieldCompareFunc == nil {
-		return CompareReflectDeepEqual(u, name, actual, expected)
+		return CompareReflectDeepEqual(actual, expected)
 	}
 
 	return test.FieldCompareFunc(u, name, actual, expected)
