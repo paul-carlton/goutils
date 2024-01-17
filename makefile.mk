@@ -49,7 +49,7 @@ gofumpt: ${GO_SOURCES}
 clean-test:
 	rm -rf $(dir ${TEST_ARTIFACT})
 
-test: ${TEST_ARTIFACT}
+test: ${TEST_ARTIFACT} 
 ${TEST_ARTIFACT}: ${GO_SOURCES}
 	if [ -n "${GO_TEST_SOURCES}" ]; then
 		{ echo "${YELLOW}Running go test${NC_DIR}" && \
@@ -89,7 +89,7 @@ ${LINT_ARTIFACT}: ${MAKEFILE_PATH}/golangci-lint.yml ${GO_SOURCES}
 		--path-prefix "$$(realpath --relative-to ${MAKEFILE_PATH} ${CURDIR})/." \
 		.) && \
 	touch $@ && \
-	cd ${MAKEFILE_PATH} && \
+	cd ${MAKEFILE_PATH}
 
 go.mod:
 	go mod tidy
