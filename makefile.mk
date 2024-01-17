@@ -81,7 +81,7 @@ lint: ${LINT_ARTIFACT}
 ${LINT_ARTIFACT}: ${MAKEFILE_PATH}/golangci-lint.yml ${GO_SOURCES}
 	echo "${YELLOW}Running go lint${NC_DIR}" && \
 	(cd $(CURDIR) && \
-	 procs=$$(expr $$(4 '*' 2 '-' 1)) && \
+	 procs=7 && \
 	GOPROXY=https://proxy.golang.org,direct \
 	golangci-lint run \
 		--config ${MAKEFILE_PATH}/golangci-lint.yml \
