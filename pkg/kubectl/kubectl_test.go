@@ -45,7 +45,7 @@ import (
 
 	"github.com/go-logr/logr"
 	testlogr "github.com/go-logr/logr/testing"
-	gomock "github.com/golang/mock/gomock"
+	gomock "go.uber.org/mock/gomock"
 
 	"github.com/paul-carlton/goutils/pkg/kubectl"
 	mocks "github.com/paul-carlton/goutils/pkg/mocks/kubectl"
@@ -65,13 +65,13 @@ const (
 	tempDir       = "/tmp/temp-dir"
 )
 
-func TestNewKubectl(t *testing.T) { // nolint: dupl // ok
+func TestNewKubectl(t *testing.T) { //nolint: dupl // ok
 	s := setupApply(t).expectKubectlFound()
 	logger := testlogr.TestLogger{T: t}
 
 	k, err := kubectl.NewKubectl(logger)
 	if err != nil {
-		t.Errorf("The NewKubectl function returned an error! %w", err)
+		t.Errorf("The NewKubectl function returned an error! %v", err)
 	}
 
 	t.Logf("k (%T) %#v", k, k)
@@ -106,13 +106,13 @@ func TestNewKubectl(t *testing.T) { // nolint: dupl // ok
 	t.Logf("kubectl full path: %s", kubectl.GetFactoryPath(*f))
 }
 
-func TestNewKustomize(t *testing.T) { // nolint: dupl // ok
+func TestNewKustomize(t *testing.T) { //nolint: dupl // ok
 	s := setupApply(t).expectKustomizeFound()
 	logger := testlogr.TestLogger{T: t}
 
 	k, err := kubectl.NewKustomize(logger)
 	if err != nil {
-		t.Errorf("The NewKustomize function returned an error! %w", err)
+		t.Errorf("The NewKustomize function returned an error! %v", err)
 	}
 
 	t.Logf("k (%T) %#v", k, k)
@@ -155,7 +155,7 @@ func TestKubectlCommandFoundInPath(t *testing.T) {
 	t.Logf("Kubectl (%T) %#v", f, f)
 
 	if err != nil {
-		t.Errorf("Error returned from the execLookPath function : %w", err)
+		t.Errorf("Error returned from the execLookPath function : %v", err)
 	} else {
 		t.Logf("Kubectl command path '%s'", kubectl.GetFactoryPath(*f))
 	}
@@ -221,7 +221,7 @@ func TestKubectlApplyRunReturnsOutput(t *testing.T) {
 
 	gotOutput, err := s.Apply().Run()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.Run: %w", err)
+		t.Errorf("Error returned from ApplyCommand.Run: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.Run")
 	}
 
@@ -238,7 +238,7 @@ func TestKubectlApplyDryRunReturnsOutput(t *testing.T) {
 
 	gotOutput, err := s.Apply().DryRun()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.DryRun: %w", err)
+		t.Errorf("Error returned from ApplyCommand.DryRun: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.DryRun")
 	}
 
@@ -265,7 +265,7 @@ func TestKubectlRunUsesFactoryLogger(t *testing.T) {
 
 	_, err := s.Apply().Run()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.DryRun: %w", err)
+		t.Errorf("Error returned from ApplyCommand.DryRun: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.DryRun")
 	}
 }
@@ -278,7 +278,7 @@ func TestKubectlCommandWithLoggerPassedNil(t *testing.T) {
 	_, err := s.Apply().WithLogger(nil).Run()
 	// No error, and the message should be logged to the CommandFactory's logger as expected
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.Run: %w", err)
+		t.Errorf("Error returned from ApplyCommand.Run: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.Run")
 	}
 }
@@ -289,7 +289,7 @@ func TestKubectlApplyRunLogsKubectlCommand(t *testing.T) {
 
 	_, err := s.Apply().Run()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.Run: %w", err)
+		t.Errorf("Error returned from ApplyCommand.Run: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.Run")
 	}
 }
@@ -300,7 +300,7 @@ func TestKubectlApplyDryRunLogsKubectlCommand(t *testing.T) {
 
 	_, err := s.Apply().DryRun()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.Run: %w", err)
+		t.Errorf("Error returned from ApplyCommand.Run: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.Run")
 	}
 }
@@ -312,7 +312,7 @@ func TestKubectlCommandWithLoggerUsesPassedLogger(t *testing.T) {
 	// Create the ApplyCommand from the Kubectl factory, and swap in the rightLogger with the WithLogger function
 	_, err := s.Apply().WithLogger(s.cmdLogr).Run()
 	if err != nil {
-		t.Errorf("Error returned from ApplyCommand.Run: %w", err)
+		t.Errorf("Error returned from ApplyCommand.Run: %v", err)
 		t.Fatalf("Error returned from ApplyCommand.Run")
 	}
 }
@@ -456,7 +456,7 @@ func (s *Setup) withKustomizeFactoryLogr(logger logr.Logger) *Setup {
 	s.t.Logf("kustomize (%T) %#v", factory, factory)
 
 	if err != nil {
-		s.t.Errorf("Error returned from the execLookPath function : %w", err)
+		s.t.Errorf("Error returned from the execLookPath function : %v", err)
 	}
 
 	s.factory = factory
@@ -473,7 +473,7 @@ func (s *Setup) withFactoryLogr(logger logr.Logger) *Setup {
 	s.t.Logf("Kubectl (%T) %#v", factory, factory)
 
 	if err != nil {
-		s.t.Errorf("Error returned from the execLookPath function : %w", err)
+		s.t.Errorf("Error returned from the execLookPath function : %v", err)
 	}
 
 	s.factory = factory
@@ -517,7 +517,7 @@ func (s *Setup) expectRunError() *Setup {
 	return s
 }
 
-func (s *Setup) expectRunLogsKubectlCommand() *Setup { // nolint: dupl // ok
+func (s *Setup) expectRunLogsKubectlCommand() *Setup { //nolint: dupl // ok
 	s.expectRun()
 	// The ApplyCommand should use the factory's mockLogger to log a log-leveled message indicating that kubectl was executed with the expected command
 	s.mockLogr.EXPECT().V(gomock.Any()).Return(s.mockLogr).Times(7)
@@ -532,7 +532,7 @@ func (s *Setup) expectRunLogsKubectlCommand() *Setup { // nolint: dupl // ok
 	return s
 }
 
-func (s *Setup) expectDryRunLogsKubectlCommand() *Setup { // nolint: dupl // ok
+func (s *Setup) expectDryRunLogsKubectlCommand() *Setup { //nolint: dupl // ok
 	s.expectDryRun()
 	// The ApplyCommand should use the factory's mockLogger to log a log-leveled message indicating that kubectl was executed with the expected command
 	s.mockLogr.EXPECT().V(gomock.Any()).Return(s.mockLogr).Times(7)

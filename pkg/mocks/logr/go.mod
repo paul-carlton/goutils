@@ -1,8 +1,8 @@
 module github.com/paul-carlton/goutils/pkg/mocks/logr
 
-go 1.15
+go 1.21
 
 require (
 	github.com/go-logr/logr v0.4.0
-	github.com/golang/mock v1.5.0
+	go.uber.org/mock v0.4.0
 )

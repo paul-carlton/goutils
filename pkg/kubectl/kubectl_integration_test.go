@@ -53,7 +53,7 @@ func TestRealKubectlBinaryInstalled(t *testing.T) {
 	t.Logf("Kubectl (%T) %#v", k, k)
 
 	if err != nil {
-		t.Errorf("Error from NewKubectl constructor function: %w", err)
+		t.Errorf("Error from NewKubectl constructor function: %v", err)
 	} else {
 		t.Logf("Found '%s' binary at '%s'", kubectl.KubectlCmd, kubectl.GetFactoryPath(*k.(*kubectl.CommandFactory)))
 	}

@@ -4,11 +4,11 @@ go 1.21
 
 require (
 	github.com/go-logr/logr v0.4.0
-	github.com/golang/mock v1.5.0
 	github.com/paul-carlton/goutils/pkg/logging v0.1.5
 	github.com/paul-carlton/goutils/pkg/mocks/kubectl v0.1.5
 	github.com/paul-carlton/goutils/pkg/mocks/logr v0.1.5
 	github.com/pkg/errors v0.9.1
+	go.uber.org/mock v0.4.0
 )
 
 require (
@@ -20,11 +20,10 @@ require (
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.1 // indirect
 	go.uber.org/atomic v1.7.0 // indirect
-	go.uber.org/mock v0.4.0 // indirect
 	go.uber.org/multierr v1.6.0 // indirect
 	go.uber.org/zap v1.17.0 // indirect
-	golang.org/x/net v0.0.0-20210428140749-89ef3d95e781 // indirect
-	golang.org/x/text v0.3.6 // indirect
+	golang.org/x/net v0.1.0 // indirect
+	golang.org/x/text v0.4.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 	k8s.io/apimachinery v0.21.2 // indirect

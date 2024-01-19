@@ -21,7 +21,7 @@ package kubectl
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"path/filepath"
 	"strings"
 
@@ -36,11 +36,11 @@ const (
 )
 
 var (
-	kubectlCmd          = "kubectl"            // nolint: gochecknoglobals // ok
-	kustomizeCmd        = "kustomize"          // nolint: gochecknoglobals // ok
-	applyArgs           = []string{"-R", "-f"} // nolint: gochecknoglobals // ok
-	newExecProviderFunc = newExecProvider      // nolint: gochecknoglobals // ok
-	tempDirProviderFunc = createTempDir        // nolint: gochecknoglobals // ok
+	kubectlCmd          = "kubectl"            //nolint: gochecknoglobals // ok
+	kustomizeCmd        = "kustomize"          //nolint: gochecknoglobals // ok
+	applyArgs           = []string{"-R", "-f"} //nolint: gochecknoglobals // ok
+	newExecProviderFunc = newExecProvider      //nolint: gochecknoglobals // ok
+	tempDirProviderFunc = createTempDir        //nolint: gochecknoglobals // ok
 )
 
 // Kubectl is a Factory interface that returns concrete Command implementations from named constructors.
@@ -182,10 +182,7 @@ func (c *abstractCommand) Run() (output []byte, err error) {
 
 // createTempDir creates a temporary directory.
 func createTempDir() (buildDir string, err error) {
-	buildDir, err = ioutil.TempDir("", "build-*")
-	if err != nil {
-		return "", errors.WithMessagef(err, "%s - failed to create temporary directory", logging.CallerStr(logging.Me))
-	}
+	buildDir = os.TempDir()
 
 	return buildDir, nil
 }
@@ -199,7 +196,7 @@ func (c *abstractCommand) Build() (buildDir string) {
 
 	buildDir, err = tempDirProviderFunc()
 	if err != nil {
-		c.logError(err) // nolint:errcheck //ok
+		c.logError(err) //nolint:errcheck //ok
 
 		return buildDir
 	}
@@ -209,7 +206,7 @@ func (c *abstractCommand) Build() (buildDir string) {
 
 	c.output, err = c.factory.getExecProvider().ExecCmd(c.getPath(), c.getArgs()...)
 	if err != nil {
-		c.logError(err) // nolint:errcheck //ok
+		c.logError(err) //nolint:errcheck //ok
 	}
 
 	return buildDir

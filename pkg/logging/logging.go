@@ -32,11 +32,11 @@ const (
 	traceLevelEnvVar       = "TRACE_LEVEL"
 )
 
-var TraceLevel = four // nolint:gochecknoglobals //ok
+var TraceLevel = four //nolint:gochecknoglobals //ok
 
 var errNotAvailable = errors.New("caller not availalble")
 
-func init() { // nolint:gochecknoinits //ok
+func init() { //nolint:gochecknoinits //ok
 	if tlevel, ok := os.LookupEnv(traceLevelEnvVar); ok {
 		var err error
 		if TraceLevel, err = strconv.Atoi(tlevel); err != nil {

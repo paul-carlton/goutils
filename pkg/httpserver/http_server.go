@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net"
 	"net/http"
 	"strings"
@@ -72,7 +71,7 @@ func (handler *HandlerHTTP) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.Error(w, fmt.Sprintf("unrecognised request %s", ThePath), http.StatusBadRequest)
 }
 
-func (handler *HandlerHTTP) Start(handlers *MuxHTTP) {
+func (handler *HandlerHTTP) Start(_ *MuxHTTP) {
 	go serveHTTP(*handler)
 }
 
@@ -159,7 +158,7 @@ func JSONresponse(w http.ResponseWriter, jsonResp string) (int, string) {
 func GetReqBody(r *http.Request) (string, error) {
 	defer r.Body.Close()
 
-	data, err := ioutil.ReadAll(r.Body)
+	data, err := io.ReadAll(r.Body)
 	if err != nil {
 		return "", readingBodyError(err.Error())
 	}

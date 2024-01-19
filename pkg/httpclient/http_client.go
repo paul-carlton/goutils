@@ -7,7 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -32,11 +31,11 @@ var (
 	ErrorRequestFailed      = errors.New("error making request")
 	ErrorRequestBodyInvalid = errors.New("failed to convert request body data to JSON")
 
-	tr             *http.Transport // nolint:gochecknoglobals // ok
-	DefaultTimeout time.Duration   // nolint:gochecknoglobals // ok
-	Post           = "POST"        // nolint:gochecknoglobals // ok
-	Delete         = "DELETE"      // nolint:gochecknoglobals // ok
-	Get            = "GET"         // nolint:gochecknoglobals // ok
+	tr             *http.Transport //nolint:gochecknoglobals // ok
+	DefaultTimeout time.Duration   //nolint:gochecknoglobals // ok
+	Post           = "POST"        //nolint:gochecknoglobals // ok
+	Delete         = "DELETE"      //nolint:gochecknoglobals // ok
+	Get            = "GET"         //nolint:gochecknoglobals // ok
 )
 
 func readingResponseBodyError(msg string) error {
@@ -51,7 +50,7 @@ func requestBodyError(msg string) error {
 	return fmt.Errorf("%w: %s", ErrorRequestBodyInvalid, msg)
 }
 
-func init() { // nolint:gochecknoinits // ok
+func init() { //nolint:gochecknoinits // ok
 	tr = &http.Transport{
 		Proxy:               http.ProxyFromEnvironment,
 		MaxIdleConns:        oneHundred,
@@ -153,7 +152,7 @@ func (r *reqResp) CloseBody() {
 }
 
 // HTTPreq creates an HTTP client and sends a request. The response is held in reqResp.RespText.
-func (r *reqResp) HTTPreq() error { // nolint:funlen,gocognit,gocyclo // ok
+func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 	var err error
 
 	r.client.Timeout = *r.timeout
@@ -168,7 +167,7 @@ func (r *reqResp) HTTPreq() error { // nolint:funlen,gocognit,gocyclo // ok
 			return requestBodyError(e.Error())
 		}
 
-		inputJSON = ioutil.NopCloser(bytes.NewReader(jsonBytes))
+		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
 	}
 
 	httpReq, err := http.NewRequestWithContext(r.ctx, *r.method, r.url.String(), inputJSON)
@@ -187,8 +186,8 @@ func (r *reqResp) HTTPreq() error { // nolint:funlen,gocognit,gocyclo // ok
 	start := time.Now()
 
 	for {
-		r.resp, err = r.client.Do(httpReq) // nolint:bodyclose // ok
-		if err != nil {                    // nolint:nestif // ok
+		r.resp, err = r.client.Do(httpReq) //nolint:bodyclose // ok
+		if err != nil {                    //nolint:nestif // ok
 			if strings.Contains(err.Error(), "connection refused") ||
 				strings.Contains(err.Error(), "http2: no cached connection was available") ||
 				strings.Contains(err.Error(), "net/http: TLS handshake timeout") ||
@@ -232,7 +231,7 @@ func (r *reqResp) HTTPreq() error { // nolint:funlen,gocognit,gocyclo // ok
 func (r *reqResp) getRespBody() error {
 	defer r.resp.Body.Close()
 
-	data, err := ioutil.ReadAll(r.resp.Body)
+	data, err := io.ReadAll(r.resp.Body)
 	if err != nil {
 		return readingResponseBodyError(err.Error())
 	}
