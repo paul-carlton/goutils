@@ -5,7 +5,6 @@
 //
 //	mockgen -destination=../mocks/kubectl/mockExecProvider.go -package=mocks -source=execProvider.go . ExecProvider
 //
-
 // Package mocks is a generated GoMock package.
 package mocks
 

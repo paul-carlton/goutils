@@ -86,7 +86,7 @@ ${LINT_ARTIFACT}: ${MAKEFILE_PATH}/golangci-lint.yml ${GO_SOURCES}
 	golangci-lint run \
 		--config ${MAKEFILE_PATH}/golangci-lint.yml \
 		--concurrency=$${procs} \
-		--path-prefix "$$(realpath --relative-to ${MAKEFILE_PATH} ${CURDIR})/." \
+		--path-prefix "$$($$realpath --relative-to ${MAKEFILE_PATH} ${CURDIR})/." \
 		.) && \
 	touch $@ && \
 	cd ${MAKEFILE_PATH}

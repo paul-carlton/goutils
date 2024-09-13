@@ -5,7 +5,6 @@
 //
 //	mockgen -destination=../mocks/kubectl/mockKubectl.go -package=mocks . Kubectl,Command
 //
-
 // Package mocks is a generated GoMock package.
 package mocks
 
