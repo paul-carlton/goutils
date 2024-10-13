@@ -1,6 +1,6 @@
 module github.com/paul-carlton/goutils/pkg/httpclient
 
-go 1.21
+go 1.22
 
 require (
 	github.com/go-logr/logr v0.4.0
