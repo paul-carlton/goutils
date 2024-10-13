@@ -83,7 +83,7 @@ type ReqResp interface {
 	HTTPreq() error
 	getRespBody() error
 	CloseBody()
-	RespBody() string
+	RespBody() *string
 	ResponseCode() int
 }
 
@@ -223,7 +223,7 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 			return nil
 		}
 
-		return requestError(fmt.Sprintf("failed: %s %s", r.resp.Status, r.RespBody()))
+		return requestError(fmt.Sprintf("failed: %s %s", r.resp.Status, *r.RespBody()))
 	}
 }
 
@@ -243,16 +243,16 @@ func (r *reqResp) getRespBody() error {
 }
 
 // RespBody is used to return the response body as a string.
-func (r *reqResp) RespBody() string {
+func (r *reqResp) RespBody() *string {
 	if r.respText == nil {
 		if err := r.getRespBody(); err != nil {
 			r.logger.Error(err, "failed to retrieve response body")
 
-			return ""
+			return nil
 		}
 	}
 
-	return *r.respText
+	return r.respText
 }
 
 // RespCode is used to return the response code.
