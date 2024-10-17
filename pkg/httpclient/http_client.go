@@ -88,13 +88,16 @@ type ReqResp interface {
 }
 
 func NewReqResp(ctx context.Context, url *url.URL, method *string, body interface{}, header Header,
-	timeout *time.Duration, logger logr.Logger, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
+	timeout *time.Duration, logger *logr.Logger, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
 	if url == nil {
 		return nil, ErrorInvalidURL
 	}
 
+	var log logr.Logger
 	if logger == nil {
-		logger = logging.NewLogger("httpClient", &zap.Options{})
+		log = logging.NewLogger("httpClient", &zap.Options{})
+	} else {
+		log = *logger
 	}
 
 	if transport == nil {
@@ -123,7 +126,7 @@ func NewReqResp(ctx context.Context, url *url.URL, method *string, body interfac
 
 	r := reqResp{
 		ctx:          ctx,
-		logger:       logger,
+		logger:       log,
 		transport:    tr,
 		client:       client,
 		url:          url,

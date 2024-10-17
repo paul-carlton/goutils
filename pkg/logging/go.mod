@@ -1,4 +1,4 @@
-module github.com/nabancard/phone-tester/pkg/logging
+module github.com/paul-carlton/goutils/pkg/logging
 
 go 1.22.8
 

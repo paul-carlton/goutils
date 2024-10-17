@@ -1,6 +1,5 @@
-go 1.22
+go 1.22.8
 use ./pkg/logging
 use ./pkg/httpclient
-use ./pkg/httpserver
 use ./pkg/testutils
 use ./pkg/mocks/logr
