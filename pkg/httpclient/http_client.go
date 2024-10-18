@@ -3,6 +3,7 @@ package httpclient
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -11,11 +12,6 @@ import (
 	"net/url"
 	"strings"
 	"time"
-
-	"github.com/go-logr/logr"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
-
-	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 const (
@@ -67,7 +63,6 @@ type Header map[string]string
 type reqResp struct {
 	ReqResp
 	ctx          context.Context
-	logger       logr.Logger
 	client       *http.Client
 	transport    *http.Transport
 	url          *url.URL
@@ -88,16 +83,9 @@ type ReqResp interface {
 }
 
 func NewReqResp(ctx context.Context, url *url.URL, method *string, body interface{}, header Header,
-	timeout *time.Duration, logger *logr.Logger, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
+	timeout *time.Duration, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
 	if url == nil {
 		return nil, ErrorInvalidURL
-	}
-
-	var log logr.Logger
-	if logger == nil {
-		log = logging.NewLogger("httpClient", &zap.Options{})
-	} else {
-		log = *logger
 	}
 
 	if transport == nil {
@@ -105,7 +93,19 @@ func NewReqResp(ctx context.Context, url *url.URL, method *string, body interfac
 	}
 
 	if client == nil {
-		client = &http.Client{Transport: transport}
+		if url.Scheme == "https" {
+			fmt.Println("Creating TLS client")
+			client = &http.Client{
+				Transport: &http.Transport{
+					TLSClientConfig: &tls.Config{
+						MinVersion: tls.VersionTLS12,
+					},
+				},
+			}
+		} else {
+			fmt.Println("Creating HTTP client")
+			client = &http.Client{Transport: transport}
+		}
 	}
 
 	if header == nil {
@@ -126,7 +126,6 @@ func NewReqResp(ctx context.Context, url *url.URL, method *string, body interfac
 
 	r := reqResp{
 		ctx:          ctx,
-		logger:       log,
 		transport:    tr,
 		client:       client,
 		url:          url,
@@ -148,7 +147,7 @@ func (r *reqResp) CloseBody() {
 		if r.resp.Body != nil {
 			e := r.resp.Body.Close()
 			if e != nil {
-				r.logger.Error(e, "failed to close response body")
+				fmt.Printf("failed to close response body, %s", e)
 			}
 		}
 	}
@@ -160,7 +159,7 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 
 	r.client.Timeout = *r.timeout
 
-	// r.logger.V(logging.TraceLevel).Info("Request", "method", r.method, "url", r.url) //.
+	fmt.Printf("Request, method: %s, url: %+v\n", *r.method, *r.url)
 
 	var inputJSON io.ReadCloser
 
@@ -187,10 +186,11 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 	retries := 30
 	seconds := 1
 	start := time.Now()
-
+	fmt.Printf("Sending request at: %s\n", start)
 	for {
 		r.resp, err = r.client.Do(httpReq) //nolint:bodyclose // ok
 		if err != nil {                    //nolint:nestif // ok
+			fmt.Printf("Error sending request, %s\n", err)
 			if strings.Contains(err.Error(), "connection refused") ||
 				strings.Contains(err.Error(), "http2: no cached connection was available") ||
 				strings.Contains(err.Error(), "net/http: TLS handshake timeout") ||
@@ -208,18 +208,20 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 				}
 
 				if retries > 0 || time.Since(start) > *r.timeout {
-					r.logger.Error(err, "server failed to respond", "url", r.url)
-
+					fmt.Printf("server failed to respond, url: %s\n", r.url)
+					fmt.Printf("retrying")
 					continue
 				}
 			}
 
 			return err
 		}
-
+		fmt.Printf("sent request\n")
 		if err := r.getRespBody(); err != nil {
 			return err
 		}
+
+		fmt.Printf("got body of reply: %s\n", *r.respText)
 
 		if r.resp.StatusCode == 200 || (r.resp.StatusCode == 201 && *r.method == Post) ||
 			(r.resp.StatusCode == 204 && *r.method == Delete) {
@@ -249,12 +251,11 @@ func (r *reqResp) getRespBody() error {
 func (r *reqResp) RespBody() *string {
 	if r.respText == nil {
 		if err := r.getRespBody(); err != nil {
-			r.logger.Error(err, "failed to retrieve response body")
-
+			fmt.Printf("failed to retrieve response body: %s\n", err)
 			return nil
 		}
 	}
-
+	fmt.Printf("reqResp...\n%+v", *r)
 	return r.respText
 }
 

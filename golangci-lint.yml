@@ -215,7 +215,6 @@ linters:
     - unused
     - noctx
     - nolintlint
-    - nlreturn
     - prealloc
     - rowserrcheck
     - exportloopref
@@ -225,7 +224,6 @@ linters:
     - unconvert
     - unparam
     - whitespace
-    - wsl
   disable:
   #  - gochecknoglobals
   #  - gochecknoinits
