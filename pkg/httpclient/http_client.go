@@ -79,7 +79,7 @@ type ReqResp interface {
 	getRespBody() error
 	CloseBody()
 	RespBody() *string
-	ResponseCode() int
+	RespCode() int
 }
 
 func NewReqResp(ctx context.Context, url *url.URL, method *string, body interface{}, header Header,
@@ -242,6 +242,9 @@ func (r *reqResp) getRespBody() error {
 	}
 
 	strData := string(data)
+	if strData == "null" {
+		strData = ""
+	}
 	r.respText = &strData
 
 	return nil
