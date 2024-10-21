@@ -129,7 +129,7 @@ func (r *reqResp) CloseBody() {
 }
 
 // HTTPreq creates an HTTP client and sends a request. The response is held in reqResp.RespText.
-func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error  { //nolint:funlen,gocyclo,gocognit // ok
+func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error { //nolint:funlen,gocyclo,gocognit // ok
 	var err error
 
 	if url.Scheme == "https" {
@@ -160,7 +160,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 	r.url = url
 
-	r.log.Log(r.ctx, logging.LevelTrace,"Request", "method", *r.method, "url", r.url.String())
+	r.log.Log(r.ctx, logging.LevelTrace, "Request", "method", *r.method, "url", r.url.String())
 
 	var inputJSON io.ReadCloser
 
@@ -176,7 +176,9 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 		}
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
 
-		r.log.Log(r.ctx, logging.LevelTrace,"Payload", "body", jsonBytes)
+		r.log.Log(r.ctx, logging.LevelTrace, "Payload", "body", string(jsonBytes))
+		r.headerFields["Content-Type"] = "application/json"
+		r.headerFields["Content-Length"] = fmt.Sprintf("%d", len(jsonBytes))
 	}
 
 	httpReq, err := http.NewRequestWithContext(r.ctx, *r.method, r.url.String(), inputJSON)
