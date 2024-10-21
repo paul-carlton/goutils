@@ -154,6 +154,17 @@ func NewLogger() *slog.Logger {
 	return slog.New(handler)
 }
 
+// NewTextLogger returns a text logger.
+func NewTextLogger() *slog.Logger {
+	opts := &slog.HandlerOptions{
+		Level: setLogLevel(),
+	}
+
+	handler := slog.NewTextHandler(os.Stdout, opts)
+
+	return slog.New(handler)
+}
+
 // LogJSON is used log an item in JSON format.
 func LogJSON(data interface{}) string {
 	jsonData, err := json.Marshal(data)
