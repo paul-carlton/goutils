@@ -1,6 +1,13 @@
 package logging_test
 
 /*
+import (
+	"testing"
+
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/testutils"
+)
+
 func TestGetObjLabel(t *testing.T) {
 	tests := []*testutils.DefTest{
 		{
@@ -28,5 +35,4 @@ func TestGetObjLabel(t *testing.T) {
 		}
 	}
 }
-
 */

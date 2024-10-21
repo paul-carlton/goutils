@@ -3,20 +3,19 @@ package logging
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"runtime"
 	"strconv"
+	"strings"
 
-	"github.com/go-logr/logr"
-	uzap "go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8sruntime "k8s.io/apimachinery/pkg/runtime"
-	"sigs.k8s.io/controller-runtime/pkg/log/zap"
 )
 
 const (
@@ -28,32 +27,124 @@ const (
 	MyCallersCaller = 5
 	// MyCallersCallersCaller is the setting for the function that called the function that called the function that called the function calling MyCaller.
 	MyCallersCallersCaller = 6
-	four                   = 4
-	traceLevelEnvVar       = "TRACE_LEVEL"
+
+	// logLevelEnvVar is the environmental variable name used to set the log level, defaults to INFO if not set.
+	logLevelEnvVar = "LOG_LEVEL"
+	// logLevelEnvVar is the environmental variable name used to determine if source code info is included in the log output, defaults to true if not set.
+	logSourceEnvVar = "LOG_SOURCE"
+	// SourcePathDepthEnvVar is the environmental variable name used to determine the number of elements of the full path name is included in thes source file
+	// zero means only file name, no path elements, a positive number indicates the number of path elements to include and -1 means full path.
+	// If not set, no path elements are included.
+	sourcePathDepthEnvVar = "SOURCE_PATH_DEPTH"
+
+	// LevelTrace defines a tracing log level.
+	LevelTrace = slog.Level(-8)
+	// LevelFatal defines a fatal error log level.
+	LevelFatal = slog.Level(12)
 )
 
-var TraceLevel = four //nolint:gochecknoglobals //ok
+var (
+	errNotAvailable = errors.New("caller not availalble")
 
-var errNotAvailable = errors.New("caller not availalble")
+	levelNames = map[slog.Leveler]string{ //nolint: gochecknoglobals
+		LevelTrace: "TRACE",
+		LevelFatal: "FATAL",
+	}
+)
 
-func init() { //nolint:gochecknoinits //ok
-	if tlevel, ok := os.LookupEnv(traceLevelEnvVar); ok {
-		var err error
-		if TraceLevel, err = strconv.Atoi(tlevel); err != nil {
-			fmt.Fprintf(os.Stderr, "invalid 'TRACE_LEVEL' value: %s", tlevel)
-
-			TraceLevel = four
+func setLogLevel() slog.Level {
+	if tlevel, ok := os.LookupEnv(logLevelEnvVar); ok {
+		switch tlevel {
+		case "TRACE":
+			return LevelTrace
+		case "DEBUG":
+			return slog.LevelDebug
+		case "INFO":
+			return slog.LevelInfo
+		case "WARN":
+			return slog.LevelWarn
+		case "ERROR":
+			return slog.LevelError
+		case "FATAL":
+			return LevelFatal
+		default:
+			fmt.Printf("Invalid tracing level: %s, defaulting to INFO", tlevel)
 		}
 	}
+	return slog.LevelInfo
 }
 
-// NewLogger returns a logger configured the timestamps format is ISO8601.
-func NewLogger(name string, logOpts *zap.Options) logr.Logger {
-	encCfg := uzap.NewProductionEncoderConfig()
-	encCfg.EncodeTime = zapcore.ISO8601TimeEncoder
-	encoder := zap.Encoder(zapcore.NewJSONEncoder(encCfg))
+func setSource() bool {
+	if source, ok := os.LookupEnv(logSourceEnvVar); ok {
+		return source == strings.ToLower("true")
+	}
+	return true
+}
 
-	return zap.New(zap.UseFlagOptions(logOpts), encoder).WithName(name)
+func setSourcePathDepth() int {
+	if path, ok := os.LookupEnv(sourcePathDepthEnvVar); ok {
+		value, err := strconv.Atoi(path)
+		if err != nil {
+			fmt.Printf("Invalid source code path element count: %s, defaulting to none", path)
+			return 0
+		}
+		return value
+	}
+	return 0
+}
+
+func setLogLevelName(a slog.Attr) slog.Attr {
+	if a.Key == slog.LevelKey {
+		level, ok := a.Value.Any().(slog.Level)
+		if !ok {
+			fmt.Printf("invalid slog.Attr, Key: %s, Value: %s, skipping", a.Key, a.Value)
+			return a
+		}
+		levelLabel, exists := levelNames[level]
+		if !exists {
+			levelLabel = level.String()
+		}
+
+		a.Value = slog.StringValue(levelLabel)
+	}
+	return a
+}
+
+func setSourceName(a slog.Attr) slog.Attr {
+	if a.Key == slog.SourceKey { //nolint: nestif
+		pathElements := setSourcePathDepth()
+		if pathElements >= 0 {
+			source, ok := a.Value.Any().(*slog.Source)
+			if !ok {
+				fmt.Printf("invalid slog.Attr, Key: %s, Value: %s, skipping", a.Key, a.Value)
+				return a
+			}
+			path := strings.Split(filepath.Dir(source.File), "/")
+			if len(path) < pathElements {
+				pathElements = len(path)
+			}
+			includedPath := strings.Join(path[len(path)-pathElements:], "/")
+			source.File = fmt.Sprintf("%s/%s", includedPath, filepath.Base(source.File))
+		}
+	}
+	return a
+}
+
+// NewLogger returns a logger.
+func NewLogger() *slog.Logger {
+	opts := &slog.HandlerOptions{
+		Level:     setLogLevel(),
+		AddSource: setSource(),
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
+			a = setLogLevelName(a)
+			a = setSourceName(a)
+			return a
+		},
+	}
+
+	handler := slog.NewJSONHandler(os.Stdout, opts)
+
+	return slog.New(handler)
 }
 
 // LogJSON is used log an item in JSON format.
@@ -183,15 +274,17 @@ func CallerStr(skip uint) string {
 }
 
 // TraceCall traces calls and exit for functions.
-func TraceCall(log logr.Logger) {
+func TraceCall(log slog.Logger) {
 	callerInfo := GetCaller(MyCaller, true)
-	log.V(TraceLevel).Info("Entering function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
+	ctx := context.Background()
+	log.Log(ctx, LevelTrace, "Entering function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
 }
 
 // TraceExit traces calls and exit for functions.
-func TraceExit(log logr.Logger) {
+func TraceExit(log slog.Logger) {
 	callerInfo := GetCaller(MyCaller, true)
-	log.V(TraceLevel).Info("Exiting function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
+	ctx := context.Background()
+	log.Log(ctx, LevelTrace, "Exiting function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
 }
 
 // GetFunctionAndSource gets function name and source line for logging.

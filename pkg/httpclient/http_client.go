@@ -8,10 +8,13 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log/slog"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
+
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 const (
@@ -59,61 +62,36 @@ func init() { //nolint:gochecknoinits // ok
 // Header is a type used to store header field name/value pairs when sending HTTPS requests.
 type Header map[string]string
 
-// reqResp hold information relating to an HTTPS request and response.
+// reqResp hold information relating to an HTTP(S) request and response.
 type reqResp struct {
 	ReqResp
-	ctx          context.Context
-	client       *http.Client
-	transport    *http.Transport
+	ctx       context.Context
+	log       *slog.Logger
+	client    *http.Client
+	transport *http.Transport
+	timeout   *time.Duration
+
 	url          *url.URL
 	method       *string
-	timeout      *time.Duration
 	body         interface{}
-	resp         *http.Response
-	respText     *string
 	headerFields Header
+
+	resp     *http.Response
+	respText *string
 }
 
 type ReqResp interface {
-	HTTPreq() error
+	HTTPreq(method *string, url *url.URL, body interface{}, header Header) error
 	getRespBody() error
 	CloseBody()
 	RespBody() *string
 	RespCode() int
 }
 
-func NewReqResp(ctx context.Context, url *url.URL, method *string, body interface{}, header Header,
+func NewReqResp(ctx context.Context, logger *slog.Logger,
 	timeout *time.Duration, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
-	if url == nil {
-		return nil, ErrorInvalidURL
-	}
-
 	if transport == nil {
 		transport = tr
-	}
-
-	if client == nil {
-		if url.Scheme == "https" {
-			fmt.Println("Creating TLS client")
-			client = &http.Client{
-				Transport: &http.Transport{
-					TLSClientConfig: &tls.Config{
-						MinVersion: tls.VersionTLS12,
-					},
-				},
-			}
-		} else {
-			fmt.Println("Creating HTTP client")
-			client = &http.Client{Transport: transport}
-		}
-	}
-
-	if header == nil {
-		header = make(Header)
-	}
-
-	if method == nil {
-		method = &Get
 	}
 
 	if timeout == nil {
@@ -125,15 +103,12 @@ func NewReqResp(ctx context.Context, url *url.URL, method *string, body interfac
 	}
 
 	r := reqResp{
-		ctx:          ctx,
-		transport:    tr,
-		client:       client,
-		url:          url,
-		method:       method,
-		timeout:      timeout,
-		body:         body,
-		headerFields: header,
-		respText:     nil,
+		ctx:       ctx,
+		log:       logger,
+		transport: tr,
+		client:    client,
+		timeout:   timeout,
+		respText:  nil,
 	}
 
 	return &r, nil
@@ -154,21 +129,49 @@ func (r *reqResp) CloseBody() {
 }
 
 // HTTPreq creates an HTTP client and sends a request. The response is held in reqResp.RespText.
-func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
+func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error { //nolint:funlen,gocyclo,gocognit // ok
 	var err error
+
+	if url.Scheme == "https" {
+		fmt.Println("Creating TLS client")
+		r.client = &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					MinVersion: tls.VersionTLS12,
+				},
+			},
+		}
+	} else {
+		fmt.Println("Creating HTTP client")
+		r.client = &http.Client{Transport: r.transport}
+	}
+
+	if header == nil {
+		header = make(Header)
+	}
+	r.headerFields = header
+
+	if method == nil {
+		method = &Get
+	}
+	r.method = method
 
 	r.client.Timeout = *r.timeout
 
-	fmt.Printf("Request, method: %s, url: %+v\n", *r.method, *r.url)
+	r.log.Debug("Request", "method", *r.method, "url", r.url.String())
 
 	var inputJSON io.ReadCloser
 
 	if *r.method == Post {
-		jsonBytes, e := json.Marshal(r.body)
-		if e != nil {
-			return requestBodyError(e.Error())
+		var jsonBytes []byte
+		if b, ok := body.(string); ok {
+			jsonBytes = []byte(b)
+		} else {
+			jsonBytes, err = json.Marshal(r.body)
+			if err != nil {
+				return requestBodyError(err.Error())
+			}
 		}
-
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
 	}
 
@@ -186,11 +189,11 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 	retries := 30
 	seconds := 1
 	start := time.Now()
-	fmt.Printf("Sending request at: %s\n", start)
+	r.log.Log(r.ctx, logging.LevelTrace, "Sending request", slog.Time("start", start))
 	for {
 		r.resp, err = r.client.Do(httpReq) //nolint:bodyclose // ok
 		if err != nil {                    //nolint:nestif // ok
-			fmt.Printf("Error sending request, %s\n", err)
+			r.log.Warn("failed to send request", slog.String("error", err.Error()))
 			if strings.Contains(err.Error(), "connection refused") ||
 				strings.Contains(err.Error(), "http2: no cached connection was available") ||
 				strings.Contains(err.Error(), "net/http: TLS handshake timeout") ||
@@ -208,20 +211,20 @@ func (r *reqResp) HTTPreq() error { //nolint:funlen,gocyclo // ok
 				}
 
 				if retries > 0 || time.Since(start) > *r.timeout {
-					fmt.Printf("server failed to respond, url: %s\n", r.url)
-					fmt.Printf("retrying")
+					r.log.Warn("server failed to respond", "url", r.url)
+					r.log.Warn("retrying")
 					continue
 				}
 			}
 
 			return err
 		}
-		fmt.Printf("sent request\n")
+		r.log.Log(r.ctx, logging.LevelTrace, "sent request")
 		if err := r.getRespBody(); err != nil {
 			return err
 		}
 
-		fmt.Printf("got body of reply: %s\n", *r.respText)
+		r.log.Log(r.ctx, logging.LevelTrace, "got reply", slog.Int("code", r.resp.StatusCode), "reply", *r.respText)
 
 		if r.resp.StatusCode == 200 || (r.resp.StatusCode == 201 && *r.method == Post) ||
 			(r.resp.StatusCode == 204 && *r.method == Delete) {
