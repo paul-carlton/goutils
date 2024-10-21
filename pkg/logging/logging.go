@@ -112,7 +112,6 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 
 func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		fmt.Printf("Source...\n%+v\n", a)
 		pathElements := setSourcePathDepth()
 		if pathElements >= 0 {
 			source, ok := a.Value.Any().(slog.Source)
@@ -121,7 +120,6 @@ func setSourceName(a slog.Attr) slog.Attr {
 				return a
 			}
 			path := strings.Split(filepath.Dir(source.File), "/")
-			fmt.Printf("pathElements: %d, path, len(%d): %+v", pathElements, len(path), path)
 			if len(path) < pathElements {
 				pathElements = len(path)
 			}
@@ -132,6 +130,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 			}
 			source.File = fmt.Sprintf("%s%s%s", includedPath, sep, filepath.Base(source.File))
 			source.Function = filepath.Base(source.Function)
+			a.Value = slog.AnyValue(source)
 		}
 	}
 	return a

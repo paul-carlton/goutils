@@ -8,14 +8,6 @@ import (
 	"github.com/paul-carlton/goutils/pkg/testutils"
 )
 
-var (
-	testSource slog.Source = slog.Source{
-		Function: "a.func",
-		File:     "/a/b/c/x.go",
-		Line:     123,
-	}
-)
-
 func TestGetObjLabel(t *testing.T) {
 	tests := []*testutils.DefTest{
 		{
@@ -23,11 +15,24 @@ func TestGetObjLabel(t *testing.T) {
 			Description: "",
 			Inputs: []interface{}{
 				slog.Attr{
-					Key:   slog.SourceKey,
-					Value: slog.AnyValue(testSource),
+					Key: slog.SourceKey,
+					Value: slog.AnyValue(slog.Source{
+						Function: "a.func",
+						File:     "/a/b/c/x.go",
+						Line:     123,
+					}),
 				},
 			},
-			Expected: []interface{}{},
+			Expected: []interface{}{
+				slog.Attr{
+					Key: slog.SourceKey,
+					Value: slog.AnyValue(slog.Source{
+						Function: "a.func",
+						File:     "x.go",
+						Line:     123,
+					}),
+				},
+			},
 		},
 	}
 
