@@ -112,6 +112,7 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 
 func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
+		fmt.Printf("Source...\n%+v\n", a)
 		pathElements := setSourcePathDepth()
 		if pathElements >= 0 {
 			source, ok := a.Value.Any().(slog.Source)

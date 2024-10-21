@@ -177,6 +177,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
 
 		r.log.Log(r.ctx, logging.LevelTrace, "Payload", "body", string(jsonBytes))
+		
 		r.headerFields["Content-Type"] = "application/json"
 		r.headerFields["Content-Length"] = fmt.Sprintf("%d", len(jsonBytes))
 	}
@@ -267,7 +268,6 @@ func (r *reqResp) RespBody() *string {
 			return nil
 		}
 	}
-	fmt.Printf("reqResp...\n%+v", *r)
 	return r.respText
 }
 
