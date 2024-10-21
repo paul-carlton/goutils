@@ -1,10 +1,8 @@
-FROM golang:1.14 as builder
+FROM golang:1.22 as builder
 
 ARG VERSION
 WORKDIR /go/src/github.com/paul-carlton/goutils
 COPY . .
-#ENV GOPROXY=direct
-RUN bin/setup.sh
 RUN make
 
 ENV TAG=$TAG \

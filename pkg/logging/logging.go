@@ -274,14 +274,14 @@ func CallerStr(skip uint) string {
 }
 
 // TraceCall traces calls and exit for functions.
-func TraceCall(log slog.Logger) {
+func TraceCall(log *slog.Logger) {
 	callerInfo := GetCaller(MyCaller, true)
 	ctx := context.Background()
 	log.Log(ctx, LevelTrace, "Entering function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
 }
 
 // TraceExit traces calls and exit for functions.
-func TraceExit(log slog.Logger) {
+func TraceExit(log *slog.Logger) {
 	callerInfo := GetCaller(MyCaller, true)
 	ctx := context.Background()
 	log.Log(ctx, LevelTrace, "Exiting function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
