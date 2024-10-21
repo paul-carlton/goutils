@@ -16,7 +16,7 @@ func TestGetObjLabel(t *testing.T) {
 			Inputs: []interface{}{
 				slog.Attr{
 					Key: slog.SourceKey,
-					Value: slog.AnyValue(slog.Source{
+					Value: slog.AnyValue(&slog.Source{
 						Function: "a.func",
 						File:     "/a/b/c/x.go",
 						Line:     123,
@@ -26,7 +26,7 @@ func TestGetObjLabel(t *testing.T) {
 			Expected: []interface{}{
 				slog.Attr{
 					Key: slog.SourceKey,
-					Value: slog.AnyValue(slog.Source{
+					Value: slog.AnyValue(&slog.Source{
 						Function: "a.func",
 						File:     "x.go",
 						Line:     123,

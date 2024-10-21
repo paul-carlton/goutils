@@ -115,12 +115,12 @@ func setSourceName(a slog.Attr) slog.Attr {
 		pathElements := setSourcePathDepth()
 		if pathElements >= 0 {
 			fmt.Printf("Kind: %s, Source...\n%+v\n", a.Value.Kind().String(), a)
-			source, ok := a.Value.Any().(slog.Source)
+			source, ok := a.Value.Any().(*slog.Source)
 			if !ok {
 				fmt.Printf("expected slog.SourceKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
-				// return a
+				return a
 			}
-			fmt.Printf("Source...\n%+v\n", source)
+			fmt.Printf("Source...\n%+v\n", *source)
 			path := strings.Split(filepath.Dir(source.File), "/")
 			fmt.Printf("pathElements: %d, path, len(%d): %+v\n", pathElements, len(path), path)
 			if len(path) < pathElements {
