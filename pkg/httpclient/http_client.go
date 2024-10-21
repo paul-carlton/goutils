@@ -106,7 +106,7 @@ func NewReqResp(ctx context.Context, logger *slog.Logger,
 		ctx:       ctx,
 		log:       logger,
 		transport: tr,
-		client:    client,
+		client:    nil,
 		timeout:   timeout,
 		respText:  nil,
 	}
@@ -129,11 +129,11 @@ func (r *reqResp) CloseBody() {
 }
 
 // HTTPreq creates an HTTP client and sends a request. The response is held in reqResp.RespText.
-func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error { //nolint:funlen,gocyclo,gocognit // ok
+func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error  { //nolint:funlen,gocyclo,gocognit // ok
 	var err error
 
 	if url.Scheme == "https" {
-		fmt.Println("Creating TLS client")
+		r.log.Log(r.ctx, logging.LevelTrace, "Creating HTTPS client")
 		r.client = &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -142,7 +142,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 			},
 		}
 	} else {
-		fmt.Println("Creating HTTP client")
+		r.log.Log(r.ctx, logging.LevelTrace, "Creating HTTP client")
 		r.client = &http.Client{Transport: r.transport}
 	}
 
@@ -160,7 +160,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 	r.url = url
 
-	r.log.Debug("Request", "method", *r.method, "url", r.url.String())
+	r.log.Log(r.ctx, logging.LevelTrace,"Request", "method", *r.method, "url", r.url.String())
 
 	var inputJSON io.ReadCloser
 
@@ -175,6 +175,8 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 			}
 		}
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
+
+		r.log.Log(r.ctx, logging.LevelTrace,"Payload", "body", jsonBytes)
 	}
 
 	httpReq, err := http.NewRequestWithContext(r.ctx, *r.method, r.url.String(), inputJSON)

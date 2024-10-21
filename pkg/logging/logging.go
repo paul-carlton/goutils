@@ -114,7 +114,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
 		pathElements := setSourcePathDepth()
 		if pathElements >= 0 {
-			source, ok := a.Value.Any().(*slog.Source)
+			source, ok := a.Value.Any().(slog.Source)
 			if !ok {
 				fmt.Printf("expected slog.SourceKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
 				return a
