@@ -117,7 +117,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 			fmt.Printf("Kind: %s, Source...\n%+v\n", a.Value.Kind().String(), a)
 			source, ok := a.Value.Any().(*slog.Source)
 			if !ok {
-				fmt.Printf("expected slog.SourceKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
+				// fmt.Printf("expected slog.SourceKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
 				return a
 			}
 			fmt.Printf("Source...\n%+v\n", *source)
