@@ -158,6 +158,8 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 	r.client.Timeout = *r.timeout
 
+	r.url = url
+
 	r.log.Debug("Request", "method", *r.method, "url", r.url.String())
 
 	var inputJSON io.ReadCloser
