@@ -1,11 +1,19 @@
 package logging_test
 
-/*
 import (
+	"log/slog"
 	"testing"
 
 	"github.com/paul-carlton/goutils/pkg/logging"
 	"github.com/paul-carlton/goutils/pkg/testutils"
+)
+
+var (
+	testSource slog.Source = slog.Source{
+		Function: "a.func",
+		File:     "/a/b/c/x.go",
+		Line:     123,
+	}
 )
 
 func TestGetObjLabel(t *testing.T) {
@@ -13,7 +21,12 @@ func TestGetObjLabel(t *testing.T) {
 		{
 			Number:      1,
 			Description: "",
-			Inputs: []interface{}{},
+			Inputs: []interface{}{
+				slog.Attr{
+					Key:   slog.SourceKey,
+					Value: slog.AnyValue(testSource),
+				},
+			},
 			Expected: []interface{}{},
 		},
 	}
@@ -23,7 +36,7 @@ func TestGetObjLabel(t *testing.T) {
 
 		u.CallPrepFunc()
 
-		result := logging.XXX(testData.Inputs[0].(XXX))
+		result := logging.SetSourceName(testData.Inputs[0].(slog.Attr))
 		testData.Results = []interface{}{result}
 
 		return u.CallCheckFunc()
@@ -35,4 +48,3 @@ func TestGetObjLabel(t *testing.T) {
 		}
 	}
 }
-*/

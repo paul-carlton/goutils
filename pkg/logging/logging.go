@@ -121,6 +121,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 				return a
 			}
 			path := strings.Split(filepath.Dir(source.File), "/")
+			fmt.Printf("pathElements: %d, path, len(%d): %+v", pathElements, len(path), path)
 			if len(path) < pathElements {
 				pathElements = len(path)
 			}
