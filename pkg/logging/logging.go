@@ -97,7 +97,7 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 	if a.Key == slog.LevelKey {
 		level, ok := a.Value.Any().(slog.Level)
 		if !ok {
-			fmt.Printf("invalid slog.Attr, Key: %s, Value: %s, skipping", a.Key, a.Value)
+			fmt.Printf("expected slog.LevelKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
 			return a
 		}
 		levelLabel, exists := levelNames[level]
@@ -116,7 +116,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 		if pathElements >= 0 {
 			source, ok := a.Value.Any().(*slog.Source)
 			if !ok {
-				fmt.Printf("invalid slog.Attr, Key: %s, Value: %s, skipping", a.Key, a.Value)
+				fmt.Printf("expected slog.SourceKey, invalid slog.Attr, Key: %s, Value: %s, skipping\n", a.Key, a.Value)
 				return a
 			}
 			path := strings.Split(filepath.Dir(source.File), "/")
@@ -124,7 +124,12 @@ func setSourceName(a slog.Attr) slog.Attr {
 				pathElements = len(path)
 			}
 			includedPath := strings.Join(path[len(path)-pathElements:], "/")
-			source.File = fmt.Sprintf("%s/%s", includedPath, filepath.Base(source.File))
+			sep := ""
+			if len(includedPath) > 0 {
+				sep = "/"
+			}
+			source.File = fmt.Sprintf("%s%s%s", includedPath, sep, filepath.Base(source.File))
+			source.Function = filepath.Base(source.Function)
 		}
 	}
 	return a
