@@ -2,7 +2,7 @@ module github.com/paul-carlton/goutils/pkg/httpclient
 
 go 1.22.8
 
-require github.com/paul-carlton/goutils/pkg/logging v0.1.8
+require github.com/paul-carlton/goutils/pkg/logging v0.2.0
 
 require (
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
