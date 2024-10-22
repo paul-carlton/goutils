@@ -146,7 +146,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 	var err error
 
 	if url.Scheme == "https" {
-		r.log.Log(r.ctx, logging.LevelTrace, "Creating HTTPS client")
+		r.log.Log(r.ctx, slog.LevelDebug, "Creating HTTPS client")
 		r.client = &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -155,7 +155,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 			},
 		}
 	} else {
-		r.log.Log(r.ctx, logging.LevelTrace, "Creating HTTP client")
+		r.log.Log(r.ctx, slog.LevelDebug, "Creating HTTP client")
 		r.client = &http.Client{Transport: r.transport}
 	}
 
@@ -173,7 +173,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 	r.url = url
 
-	r.log.Log(r.ctx, logging.LevelTrace, "Request", "method", *r.method, "url", r.url.String())
+	r.log.Log(r.ctx, slog.LevelDebug, "Request", "method", *r.method, "url", r.url.String())
 
 	var inputJSON io.ReadCloser
 
@@ -189,7 +189,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 		}
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
 
-		r.log.Log(r.ctx, logging.LevelTrace, "Payload", "body", string(jsonBytes))
+		r.log.Log(r.ctx, slog.LevelDebug, "Payload", "body", string(jsonBytes))
 
 		r.headerFields["Content-Type"] = "application/json"
 		r.headerFields["Content-Length"] = fmt.Sprintf("%d", len(jsonBytes))
@@ -209,7 +209,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 	retries := 30
 	seconds := 1
 	start := time.Now()
-	r.log.Log(r.ctx, logging.LevelTrace, "Sending request", slog.Time("start", start))
+	r.log.Log(r.ctx, slog.LevelDebug, "Sending request", slog.Time("start", start))
 	for {
 		r.resp, err = r.client.Do(httpReq) //nolint:bodyclose // ok
 		if err != nil {                    //nolint:nestif // ok
@@ -244,7 +244,7 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 			return err
 		}
 
-		r.log.Log(r.ctx, logging.LevelTrace, "got reply", slog.Int("code", r.resp.StatusCode), "reply", *r.respText)
+		r.log.Log(r.ctx, slog.LevelDebug, "got reply", slog.Int("code", r.resp.StatusCode), "reply", *r.respText)
 
 		if r.resp.StatusCode == 200 || (r.resp.StatusCode == 201 && *r.method == Post) ||
 			(r.resp.StatusCode == 204 && *r.method == Delete) {
@@ -268,9 +268,6 @@ func (r *reqResp) getRespBody() error {
 	}
 
 	strData := string(data)
-	if strData == "null" {
-		strData = ""
-	}
 	r.respText = &strData
 
 	return nil
