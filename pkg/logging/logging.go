@@ -46,12 +46,21 @@ const (
 var (
 	errNotAvailable = errors.New("caller not availalble")
 
+	// levelNames defines the names of the custom logging levels.
 	levelNames = map[slog.Leveler]string{ //nolint: gochecknoglobals
 		LevelTrace: "TRACE",
 		LevelFatal: "FATAL",
 	}
+
+	// traceLog is used by trace logging functions that replace the source information with the callers source info.
+	traceLog *slog.Logger //nolint: gochecknoglobals
 )
 
+func init() {
+	traceLog = traceLogger()
+}
+
+// setLogLevel returns the logging level selected by the user.
 func setLogLevel() slog.Level {
 	if tlevel, ok := os.LookupEnv(logLevelEnvVar); ok {
 		switch tlevel {
@@ -74,6 +83,7 @@ func setLogLevel() slog.Level {
 	return slog.LevelInfo
 }
 
+// setSource set the user preference to include or exclude source file information in log messages.
 func setSource() bool {
 	if source, ok := os.LookupEnv(logSourceEnvVar); ok {
 		return source == strings.ToLower("true")
@@ -81,6 +91,7 @@ func setSource() bool {
 	return true
 }
 
+// setSourcePathDepth sets the number of path elements to include for a source file name.
 func setSourcePathDepth() int {
 	if path, ok := os.LookupEnv(sourcePathDepthEnvVar); ok {
 		value, err := strconv.Atoi(path)
@@ -93,6 +104,8 @@ func setSourcePathDepth() int {
 	return 0
 }
 
+// setLevelName sets the level string in the log message to the name of the logging level used.
+// This supports custom logging levels like FATAL and TRACE as added by this package.
 func setLogLevelName(a slog.Attr) slog.Attr {
 	if a.Key == slog.LevelKey {
 		level, ok := a.Value.Any().(slog.Level)
@@ -110,6 +123,30 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 	return a
 }
 
+// setCallerSourceName is used to set to source information to the caller of the function calling log.
+func setCallerSourceName(a slog.Attr) slog.Attr {
+	if a.Key == slog.SourceKey { //nolint: nestif
+		source := GetCaller(MyCallersCaller, false)
+		pathElements := setSourcePathDepth()
+		if pathElements >= 0 {
+			path := strings.Split(filepath.Dir(source.File), "/")
+			if len(path) < pathElements {
+				pathElements = len(path)
+			}
+			includedPath := strings.Join(path[len(path)-pathElements:], "/")
+			sep := ""
+			if len(includedPath) > 0 {
+				sep = "/"
+			}
+			source.File = fmt.Sprintf("%s%s%s", includedPath, sep, filepath.Base(source.File))
+			source.Function = filepath.Base(source.Function)
+		}
+		a.Value = slog.AnyValue(source)
+	}
+	return a
+}
+
+// setSourceName is used to set to source file name, specifically the number of elements of the directory path to include.
 func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
 		pathElements := setSourcePathDepth()
@@ -137,7 +174,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 	return a
 }
 
-// NewLogger returns a logger.
+// NewLogger returns a JSON logger.
 func NewLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
 		Level:     setLogLevel(),
@@ -145,6 +182,23 @@ func NewLogger() *slog.Logger {
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
 			a = setLogLevelName(a)
 			a = setSourceName(a)
+			return a
+		},
+	}
+
+	handler := slog.NewJSONHandler(os.Stdout, opts)
+
+	return slog.New(handler)
+}
+
+// traceLogger returns a logger for internal use by tracing that replaces the source details with supplied values.
+func traceLogger() *slog.Logger {
+	opts := &slog.HandlerOptions{
+		Level:     LevelTrace,
+		AddSource: true,
+		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
+			a = setLogLevelName(a)
+			a = setCallerSourceName(a)
 			return a
 		},
 	}
@@ -211,19 +265,12 @@ func GetObjKindNamespaceName(obj k8sruntime.Object) (result []interface{}) {
 	return result
 }
 
-// CallerInfo hold the function name and source file/line from which a call was made.
-type CallerInfo struct {
-	FunctionName string
-	SourceFile   string
-	SourceLine   int
-}
-
 // Callers returns an array of strings containing the function name, source filename and line
 // number for the caller of this function and its caller moving up the stack for as many levels as
 // are available or the number of levels specified by the levels parameter.
 // Set the short parameter to true to only return final element of Function and source file name.
-func Callers(levels uint, short bool) ([]CallerInfo, error) {
-	var callers []CallerInfo
+func Callers(levels uint, short bool) ([]slog.Source, error) {
+	var callers []slog.Source
 
 	if levels == 0 {
 		return callers, nil
@@ -254,7 +301,7 @@ func Callers(levels uint, short bool) ([]CallerInfo, error) {
 			sourceFile = filepath.Base(sourceFile)
 		}
 
-		caller := CallerInfo{FunctionName: funcName, SourceFile: sourceFile, SourceLine: lineNumber}
+		caller := slog.Source{Function: funcName, File: sourceFile, Line: lineNumber}
 		callers = append(callers, caller)
 
 		if !more {
@@ -267,55 +314,38 @@ func Callers(levels uint, short bool) ([]CallerInfo, error) {
 
 // GetCaller returns the caller of GetCaller 'skip' levels back.
 // Set the short parameter to true to only return final element of Function and source file name.
-func GetCaller(skip uint, short bool) CallerInfo {
+func GetCaller(skip uint, short bool) slog.Source {
 	callers, err := Callers(skip, short)
 	if err != nil {
-		return CallerInfo{FunctionName: "not available", SourceFile: "not available", SourceLine: 0}
+		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
 	if skip == 0 {
-		return CallerInfo{FunctionName: "not available", SourceFile: "not available", SourceLine: 0}
+		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
 	if int(skip) > len(callers) {
-		return CallerInfo{FunctionName: "not available", SourceFile: "not available", SourceLine: 0}
+		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
 	return callers[skip-1]
-}
-
-// CallerStr returns the caller's function, source file and line number as a string.
-func CallerStr(skip uint) string {
-	callerInfo := GetCaller(skip+1, true)
-
-	return fmt.Sprintf("%s - %s(%d)", callerInfo.FunctionName, callerInfo.SourceFile, callerInfo.SourceLine)
-}
-
-// TraceCall traces calls and exit for functions.
-func TraceCall(log *slog.Logger) {
-	callerInfo := GetCaller(MyCaller, true)
-	ctx := context.Background()
-	log.Log(ctx, LevelTrace, "Entering function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
-}
-
-// TraceExit traces calls and exit for functions.
-func TraceExit(log *slog.Logger) {
-	callerInfo := GetCaller(MyCaller, true)
-	ctx := context.Background()
-	log.Log(ctx, LevelTrace, "Exiting function", "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
-}
-
-// GetFunctionAndSource gets function name and source line for logging.
-func GetFunctionAndSource(skip uint) (result []interface{}) {
-	callerInfo := GetCaller(skip, true)
-	result = append(result, "function", callerInfo.FunctionName, "source", callerInfo.SourceFile, "line", callerInfo.SourceLine)
-
-	return result
 }
 
 // CallerText generates a string containing caller function, source and line.
 func CallerText(skip uint) string {
 	callerInfo := GetCaller(skip, true)
 
-	return fmt.Sprintf("%s(%d) %s - ", callerInfo.SourceFile, callerInfo.SourceLine, callerInfo.FunctionName)
+	return fmt.Sprintf("%s(%d) %s - ", callerInfo.File, callerInfo.Line, callerInfo.Function)
+}
+
+// TraceCall traces calls and exit for functions.
+func TraceCall() {
+	ctx := context.Background()
+	traceLog.Log(ctx, LevelTrace, "Entering function")
+}
+
+// TraceExit traces calls and exit for functions.
+func TraceExit() {
+	ctx := context.Background()
+	traceLog.Log(ctx, LevelTrace, "Exiting function")
 }
