@@ -356,3 +356,24 @@ func TraceExit() {
 	ctx := context.Background()
 	traceLog.Log(ctx, LevelTrace, "Exiting function")
 }
+
+// ToJSON is used get data in JSON format.
+func ToJSON(log *slog.Logger, data interface{}) string {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		log.Warn("failed to convert interface to json", "error", err)
+
+		return err.Error()
+	}
+
+	var prettyJSON bytes.Buffer
+
+	err = json.Indent(&prettyJSON, jsonData, "", "  ")
+	if err != nil {
+		log.Warn("failed to indent json", "error", err)
+
+		return err.Error()
+	}
+
+	return prettyJSON.String()
+}
