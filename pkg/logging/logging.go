@@ -52,12 +52,19 @@ var (
 		LevelFatal: "FATAL",
 	}
 
+	sourcePathDepth int        //nolint: gochecknoglobals
+	logLevel        slog.Level //nolint: gochecknoglobals
+	logSource       bool       //nolint: gochecknoglobals
+
 	// traceLog is used by trace logging functions that replace the source information with the callers source info.
 	traceLog *slog.Logger //nolint: gochecknoglobals
 )
 
 func init() {
 	traceLog = traceLogger()
+	sourcePathDepth = setSourcePathDepth()
+	logSource = setSource()
+	logLevel = setLogLevel()
 }
 
 // setLogLevel returns the logging level selected by the user.
@@ -126,20 +133,19 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 // setCallerSourceName is used to set to source information to the caller of the function calling log.
 func setCallerSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		callers, err := Callers(10, true) //nolint: mnd
+		callers, err := Callers(20, false) //nolint: mnd
 		if err != nil {
 			fmt.Printf("failed to get callers, %s", err.Error())
 			os.Exit(1)
 		}
 		fmt.Printf("caller stack...\n%+v\n", callers)
-		source := GetCaller(MyCallersCallersCaller, false)
-		pathElements := setSourcePathDepth()
-		if pathElements >= 0 {
+		source := GetCaller(10, false) //nolint: mnd
+		if sourcePathDepth >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
-			if len(path) < pathElements {
-				pathElements = len(path)
+			if len(path) < sourcePathDepth {
+				sourcePathDepth = len(path)
 			}
-			includedPath := strings.Join(path[len(path)-pathElements:], "/")
+			includedPath := strings.Join(path[len(path)-sourcePathDepth:], "/")
 			sep := ""
 			if len(includedPath) > 0 {
 				sep = "/"
@@ -155,8 +161,8 @@ func setCallerSourceName(a slog.Attr) slog.Attr {
 // setSourceName is used to set to source file name, specifically the number of elements of the directory path to include.
 func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		pathElements := setSourcePathDepth()
-		if pathElements >= 0 {
+		sourcePathDepth := setSourcePathDepth()
+		if sourcePathDepth >= 0 {
 			source, ok := a.Value.Any().(*slog.Source)
 			if !ok {
 				// Not sure why this path is taken on occasion but the code works!
@@ -164,10 +170,10 @@ func setSourceName(a slog.Attr) slog.Attr {
 				return a
 			}
 			path := strings.Split(filepath.Dir(source.File), "/")
-			if len(path) < pathElements {
-				pathElements = len(path)
+			if len(path) < sourcePathDepth {
+				sourcePathDepth = len(path)
 			}
-			includedPath := strings.Join(path[len(path)-pathElements:], "/")
+			includedPath := strings.Join(path[len(path)-sourcePathDepth:], "/")
 			sep := ""
 			if len(includedPath) > 0 {
 				sep = "/"
@@ -183,8 +189,8 @@ func setSourceName(a slog.Attr) slog.Attr {
 // NewLogger returns a JSON logger.
 func NewLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
-		Level:     setLogLevel(),
-		AddSource: setSource(),
+		Level:     logLevel,
+		AddSource: logSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
 			a = setLogLevelName(a)
 			a = setSourceName(a)
@@ -217,7 +223,7 @@ func traceLogger() *slog.Logger {
 // NewTextLogger returns a text logger.
 func NewTextLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
-		Level: setLogLevel(),
+		Level: logLevel,
 	}
 
 	handler := slog.NewTextHandler(os.Stdout, opts)
