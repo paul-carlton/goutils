@@ -90,6 +90,9 @@ type ReqResp interface {
 
 func NewReqResp(ctx context.Context, logger *slog.Logger,
 	timeout *time.Duration, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	if transport == nil {
 		transport = tr
 	}
@@ -122,6 +125,9 @@ func NewReqResp(ctx context.Context, logger *slog.Logger,
 
 // CloseBody closes the response body.
 func (r *reqResp) CloseBody() {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	if r.resp != nil {
 		if r.resp.Body != nil {
 			e := r.resp.Body.Close()
@@ -134,6 +140,9 @@ func (r *reqResp) CloseBody() {
 
 // HTTPreq creates an HTTP client and sends a request. The response is held in reqResp.RespText.
 func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header Header) error { //nolint:funlen,gocyclo,gocognit // ok
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	var err error
 
 	if url.Scheme == "https" {
@@ -248,6 +257,9 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 // getRespBody is used to obtain the response body as a string.
 func (r *reqResp) getRespBody() error {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	defer r.resp.Body.Close()
 
 	data, err := io.ReadAll(r.resp.Body)
@@ -266,6 +278,9 @@ func (r *reqResp) getRespBody() error {
 
 // RespBody is used to return the response body as a string.
 func (r *reqResp) RespBody() *string {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	if r.respText == nil {
 		if err := r.getRespBody(); err != nil {
 			fmt.Printf("failed to retrieve response body: %s\n", err)
