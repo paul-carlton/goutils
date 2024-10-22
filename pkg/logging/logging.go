@@ -139,7 +139,7 @@ func setCallerSourceName(a slog.Attr) slog.Attr {
 		// 	os.Exit(1)
 		// }
 		// fmt.Printf("caller stack...\n%+v\n", callers)
-		source := GetCaller(8, false) //nolint: mnd
+		source := GetCaller(11, false) //nolint: mnd
 		if sourcePathDepth >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
 			if len(path) < sourcePathDepth {
