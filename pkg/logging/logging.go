@@ -201,7 +201,7 @@ func NewLogger() *slog.Logger {
 // traceLogger returns a logger for internal use by tracing that replaces the source details with supplied values.
 func traceLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
-		Level:     LevelTrace,
+		Level:     LogLevel,
 		AddSource: true,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
 			a = setLogLevelName(a)
