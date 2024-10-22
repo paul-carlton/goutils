@@ -52,9 +52,10 @@ var (
 		LevelFatal: "FATAL",
 	}
 
-	sourcePathDepth int        //nolint: gochecknoglobals
-	logLevel        slog.Level //nolint: gochecknoglobals
-	logSource       bool       //nolint: gochecknoglobals
+	sourcePathDepth int //nolint: gochecknoglobals
+	// LogLevel contains the logging level set.
+	LogLevel  slog.Level //nolint: gochecknoglobals
+	logSource bool       //nolint: gochecknoglobals
 
 	// traceLog is used by trace logging functions that replace the source information with the callers source info.
 	traceLog *slog.Logger //nolint: gochecknoglobals
@@ -64,7 +65,7 @@ func init() {
 	traceLog = traceLogger()
 	sourcePathDepth = setSourcePathDepth()
 	logSource = setSource()
-	logLevel = setLogLevel()
+	LogLevel = setLogLevel()
 }
 
 // setLogLevel returns the logging level selected by the user.
@@ -183,7 +184,7 @@ func setSourceName(a slog.Attr) slog.Attr {
 // NewLogger returns a JSON logger.
 func NewLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
-		Level:     logLevel,
+		Level:     LogLevel,
 		AddSource: logSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
 			a = setLogLevelName(a)
@@ -217,7 +218,7 @@ func traceLogger() *slog.Logger {
 // NewTextLogger returns a text logger.
 func NewTextLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
-		Level: logLevel,
+		Level: LogLevel,
 	}
 
 	handler := slog.NewTextHandler(os.Stdout, opts)
