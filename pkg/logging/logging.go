@@ -126,7 +126,13 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 // setCallerSourceName is used to set to source information to the caller of the function calling log.
 func setCallerSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		source := GetCaller(MyCallersCaller, false)
+		callers, err := Callers(10, true) //nolint: mnd
+		if err != nil {
+			fmt.Printf("failed to get callers, %s", err.Error())
+			os.Exit(1)
+		}
+		fmt.Printf("caller stack...\n%+v\n", callers)
+		source := GetCaller(MyCallersCallersCaller, false)
 		pathElements := setSourcePathDepth()
 		if pathElements >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
