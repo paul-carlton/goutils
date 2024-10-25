@@ -234,10 +234,10 @@ func UnsetEnvs(t *testing.T, names []string) {
 }
 
 // MapKeysToList returns the keys of a map[string]string as a list.
-func MapKeysToList(envsMap map[string]string) []string {
-	keys := make([]string, 0, len(envsMap))
+func MapKeysToList(theMap map[string]string) []string {
+	keys := make([]string, 0, len(theMap))
 
-	for k := range envsMap {
+	for k := range theMap {
 		keys = append(keys, k)
 	}
 

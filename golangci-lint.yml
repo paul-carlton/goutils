@@ -3,7 +3,7 @@
 
 # options for analysis running
 run:
-  go: "1.21"
+  go: "1.23"
   # timeout for analysis, e.g. 30s, 5m, default is 1m
   deadline: 1m
 
@@ -183,7 +183,7 @@ linters:
     - dupl
     - exhaustive
     - errcheck
-    - exportloopref
+    - copyloopvar
     - funlen
     - gochecknoglobals
     # - gochecknoinits
@@ -217,7 +217,7 @@ linters:
     - nolintlint
     - prealloc
     - rowserrcheck
-    - exportloopref
+    - copyloopvar
     - sqlclosecheck
     - stylecheck
     - testpackage

@@ -331,7 +331,7 @@ func GetCaller(skip uint, short bool) slog.Source {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
-	if int(skip) > len(callers) {
+	if int(skip) > len(callers) { //nolint: gosec
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
@@ -376,4 +376,11 @@ func ToJSON(log *slog.Logger, data interface{}) string {
 	}
 
 	return prettyJSON.String()
+}
+
+func Debug(pattern string, args ...interface{}) {
+	if LogLevel <= slog.LevelDebug {
+		pattern := CallerText(MyCallersCaller) + pattern
+		fmt.Printf(pattern, args...)
+	}
 }

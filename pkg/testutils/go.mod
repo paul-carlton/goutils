@@ -1,6 +1,6 @@
 module github.com/paul-carlton/goutils/pkg/testutils
 
-go 1.22.8
+go 1.23.2
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
