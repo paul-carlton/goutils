@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"io"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -181,9 +182,13 @@ func setSourceName(a slog.Attr) slog.Attr {
 	return a
 }
 
-// NewLogger returns a JSON logger.
-func NewLogger() *slog.Logger {
-	opts := &slog.HandlerOptions{
+// NewLogger returns a JSON logger writing to provided writer.
+func NewLoggerTo(out io.Writer) *slog.Logger {
+	return slog.New(slog.NewJSONHandler(out, setupOptions()))
+}
+
+func setupOptions() *slog.HandlerOptions {
+	return &slog.HandlerOptions{
 		Level:     LogLevel,
 		AddSource: logSource,
 		ReplaceAttr: func(groups []string, a slog.Attr) slog.Attr { //nolint: revive
@@ -191,11 +196,12 @@ func NewLogger() *slog.Logger {
 			a = setSourceName(a)
 			return a
 		},
-	}
+	}	
+}
 
-	handler := slog.NewJSONHandler(os.Stdout, opts)
-
-	return slog.New(handler)
+// NewLogger returns a JSON logger.
+func NewLogger() *slog.Logger {
+	return slog.New(slog.NewJSONHandler(os.Stdout, setupOptions()))
 }
 
 // traceLogger returns a logger for internal use by tracing that replaces the source details with supplied values.
