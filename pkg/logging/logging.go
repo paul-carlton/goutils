@@ -384,3 +384,7 @@ func Debug(pattern string, args ...interface{}) {
 		fmt.Printf(pattern, args...)
 	}
 }
+
+func ErrorReport(text string, err error) error {
+	return fmt.Errorf("%s - %s, %w", CallerText(MyCaller), text, err)
+}
