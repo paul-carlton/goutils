@@ -386,11 +386,11 @@ func ToJSON(log *slog.Logger, data interface{}) string {
 
 func Debug(pattern string, args ...interface{}) {
 	if LogLevel <= slog.LevelDebug {
-		pattern := CallerText(MyCallersCallersCaller) + pattern
+		pattern := CallerText(MyCallersCaller) + pattern
 		fmt.Printf(pattern, args...)
 	}
 }
 
 func ErrorReport(text string, err error) error {
-	return fmt.Errorf("%s - %s, %w", CallerText(MyCaller), text, err)
+	return fmt.Errorf("%s - %s, %w", CallerText(MyCallersCaller), text, err)
 }
