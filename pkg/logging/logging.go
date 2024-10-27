@@ -386,7 +386,7 @@ func ToJSON(log *slog.Logger, data interface{}) string {
 
 func Debug(pattern string, args ...interface{}) {
 	if LogLevel <= slog.LevelDebug {
-		pattern := CallerText(MyCallersCaller) + pattern
+		pattern := CallerText(MyCallersCallersCaller) + pattern
 		fmt.Printf(pattern, args...)
 	}
 }
