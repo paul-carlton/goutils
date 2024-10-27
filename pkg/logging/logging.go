@@ -29,7 +29,7 @@ const (
 	// MyCallersCallersCaller is the setting for the function that called the function that called the function that called the function calling MyCaller.
 	MyCallersCallersCaller = 6
 
-	stackDepth = 10
+	stackDepth = 32
 
 	// logLevelEnvVar is the environmental variable name used to set the log level, defaults to INFO if not set.
 	logLevelEnvVar = "LOG_LEVEL"
@@ -284,17 +284,17 @@ func GetObjKindNamespaceName(obj k8sruntime.Object) (result []interface{}) {
 // number for the caller of this function and its caller moving up the stack for as many levels as
 // are available or the number of levels specified by the levels parameter.
 // Set the short parameter to true to only return final element of Function and source file name.
-func Callers(levels int, short bool) ([]slog.Source, error) {
+func Callers(skip int, short bool) ([]slog.Source, error) {
 	var callers []slog.Source
 
-	if levels == 0 {
+	if skip == 0 {
 		return callers, nil
 	}
 	// We get the callers as uintptrs.
-	fpcs := make([]uintptr, levels)
+	fpcs := make([]uintptr, stackDepth)
 
 	// Skip 1 levels to get to the caller of whoever called Callers().
-	n := runtime.Callers(levels, fpcs)
+	n := runtime.Callers(skip, fpcs)
 	if n == 0 {
 		return nil, errNotAvailable
 	}
@@ -323,17 +323,17 @@ func Callers(levels int, short bool) ([]slog.Source, error) {
 			break
 		}
 	}
-	// fmt.Printf("callers...\n")
-	// for i, c := range callers {
-	// 	fmt.Printf("%d: %s(%d) %s\n", i, c.File, c.Line, c.Function)
-	// }
+	fmt.Printf("callers...\n")
+	for i, c := range callers {
+		fmt.Printf("%d: %s(%d) %s\n", i, c.File, c.Line, c.Function)
+	}
 	return callers, nil
 }
 
 // GetCaller returns the caller of GetCaller 'skip' levels back.
 // Set the short parameter to true to only return final element of Function and source file name.
-func GetCaller(skip uint, short bool) slog.Source {
-	callers, err := Callers(stackDepth, short)
+func GetCaller(skip int, short bool) slog.Source {
+	callers, err := Callers(skip, short)
 	if err != nil {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
@@ -342,7 +342,7 @@ func GetCaller(skip uint, short bool) slog.Source {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
-	if int(skip) > len(callers) { //nolint: gosec
+	if skip > len(callers) {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
@@ -350,7 +350,7 @@ func GetCaller(skip uint, short bool) slog.Source {
 }
 
 // CallerText generates a string containing caller function, source and line.
-func CallerText(skip uint) string {
+func CallerText(skip int) string {
 	callerInfo := GetCaller(skip, true)
 
 	return fmt.Sprintf("%s(%d) %s - ", callerInfo.File, callerInfo.Line, callerInfo.Function)
