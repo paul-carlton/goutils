@@ -196,7 +196,7 @@ func setupOptions() *slog.HandlerOptions {
 			a = setSourceName(a)
 			return a
 		},
-	}	
+	}
 }
 
 // NewLogger returns a JSON logger.

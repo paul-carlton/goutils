@@ -87,7 +87,7 @@ type (
 		ResultsComparer() bool
 		// FieldComparer calls the field comparer, default checking function calls this to call test data's CompareFunc or CompareReflectDeepEqual if not set.
 		FieldComparer(name string, actual, expected interface{}) bool
-		// ResultReporter calls the specified reporter, default checking function calls this to call test data's ResultsReportFunc or ReportSpew if not set.
+		// ResultsReporter calls the specified reporter, default checking function calls this to call test data's ResultsReportFunc or ReportSpew if not set.
 		ResultsReporter()
 		// FieldReporter calls the specified reporter, default checking function calls this to call test data's ReportFieldsFunc or ReportSpew if not set.
 		FieldReporter(name string, actual, expected interface{})
@@ -183,7 +183,7 @@ func DefaultPrepFunc(u TestUtil) {
 	t.Logf("Test: %d, %s\n", test.Number, test.Description)
 }
 
-func (u *testUtil) ResultReporter() {
+func (u *testUtil) ResultsReporter() {
 	test := u.TestData()
 	if test.ResultsReportFunc == nil {
 		ReportCallSpew(u)
@@ -196,7 +196,7 @@ func (u *testUtil) ResultReporter() {
 
 func (u *testUtil) FieldReporter(name string, actual, expected interface{}) {
 	test := u.TestData()
-	if test.FieldCompareFunc == nil {
+	if test.FieldReportFunc == nil {
 		ReportSpew(u, name, actual, expected)
 
 		return
@@ -216,7 +216,7 @@ func (u *testUtil) ResultsComparer() bool {
 	}
 
 	if !passed || u.FailTests() {
-		u.ResultReporter()
+		u.ResultsReporter()
 	}
 
 	return passed
