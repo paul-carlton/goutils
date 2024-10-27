@@ -65,6 +65,7 @@ var (
 )
 
 func init() {
+	fmt.Printf("creating trace logger\n")
 	traceLog = traceLogger()
 	fmt.Printf("created trace logger...\n%+v\n", traceLog)
 	sourcePathDepth = setSourcePathDepth()
