@@ -2,6 +2,7 @@
 package testutils
 
 import (
+	"fmt"
 	"os"
 	"testing"
 )
@@ -186,8 +187,13 @@ func DefaultPrepFunc(u TestUtil) {
 func (u *testUtil) ResultsReporter() {
 	test := u.TestData()
 	if test.ResultsReportFunc == nil {
-		ReportCallSpew(u)
-
+		if test.FieldReportFunc == nil {
+			ReportCallSpew(u)
+			return
+		}
+		for index := range len(test.Results) {
+			test.FieldReportFunc(u, fmt.Sprintf("%d", index), test.Results[index], test.Expected[index])
+		}
 		return
 	}
 
@@ -209,8 +215,17 @@ func (u *testUtil) ResultsComparer() bool {
 	test := u.TestData()
 	passed := false
 
-	if test.ResultsCompareFunc == nil {
-		passed = CompareReflectDeepEqual(test.Results, test.Expected)
+	if test.ResultsCompareFunc == nil { //nolint: nestif
+		if test.FieldCompareFunc == nil {
+			passed = CompareReflectDeepEqual(test.Results, test.Expected)
+		} else {
+			for index := range len(test.Results) {
+				passed = test.FieldCompareFunc(u, fmt.Sprintf("%d", index), test.Results[index], test.Expected[index])
+				if !passed {
+					break
+				}
+			}
+		}
 	} else {
 		passed = test.ResultsCompareFunc(u, "", test.Results, test.Expected)
 	}
