@@ -29,6 +29,8 @@ const (
 	// MyCallersCallersCaller is the setting for the function that called the function that called the function that called the function calling MyCaller.
 	MyCallersCallersCaller = 6
 
+	stackDepth = 10
+
 	// logLevelEnvVar is the environmental variable name used to set the log level, defaults to INFO if not set.
 	logLevelEnvVar = "LOG_LEVEL"
 	// logLevelEnvVar is the environmental variable name used to determine if source code info is included in the log output, defaults to true if not set.
@@ -296,7 +298,7 @@ func Callers(levels uint, short bool) ([]slog.Source, error) {
 	if n == 0 {
 		return nil, errNotAvailable
 	}
-
+	fmt.Printf("Frames: %d\n", n)
 	frames := runtime.CallersFrames(fpcs)
 
 	for {
@@ -331,7 +333,7 @@ func Callers(levels uint, short bool) ([]slog.Source, error) {
 // GetCaller returns the caller of GetCaller 'skip' levels back.
 // Set the short parameter to true to only return final element of Function and source file name.
 func GetCaller(skip uint, short bool) slog.Source {
-	callers, err := Callers(skip, short)
+	callers, err := Callers(stackDepth, short)
 	if err != nil {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
@@ -389,11 +391,11 @@ func ToJSON(log *slog.Logger, data interface{}) string {
 
 func Debug(pattern string, args ...interface{}) {
 	if LogLevel <= slog.LevelDebug {
-		pattern := CallerText(MyCaller) + pattern
+		pattern := CallerText(MyCallersCaller) + pattern
 		fmt.Printf(pattern, args...)
 	}
 }
 
 func ErrorReport(text string, err error) error {
-	return fmt.Errorf("%s - %s, %w", CallerText(MyCaller), text, err)
+	return fmt.Errorf("%s - %s, %w", CallerText(MyCallersCaller), text, err)
 }
