@@ -66,6 +66,7 @@ var (
 
 func init() {
 	traceLog = traceLogger()
+	fmt.Printf("created trace logger...\n%+v\n", traceLog)
 	sourcePathDepth = setSourcePathDepth()
 	logSource = setSource()
 	LogLevel = setLogLevel()
@@ -219,7 +220,7 @@ func traceLogger() *slog.Logger {
 	}
 
 	handler := slog.NewJSONHandler(os.Stdout, opts)
-
+	fmt.Printf("created trace handler...\n%+v\n", handler)
 	return slog.New(handler)
 }
 
@@ -359,6 +360,7 @@ func CallerText(skip int) string {
 // TraceCall traces calls and exit for functions.
 func TraceCall() {
 	ctx := context.Background()
+	fmt.Printf("Called TraceCall\n")
 	traceLog.Log(ctx, LevelTrace, "Entering function")
 }
 
