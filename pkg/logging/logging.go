@@ -286,9 +286,6 @@ func GetObjKindNamespaceName(obj k8sruntime.Object) (result []interface{}) {
 func Callers(skip int, short bool) ([]slog.Source, error) {
 	var callers []slog.Source
 
-	if skip == 0 {
-		return callers, nil
-	}
 	// We get the callers as uintptrs.
 	fpcs := make([]uintptr, stackDepth)
 
@@ -336,15 +333,7 @@ func GetCaller(skip int, short bool) slog.Source {
 	if err != nil {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
-
-	if skip == 0 {
-		return slog.Source{Function: "not available", File: "not available", Line: 0}
-	}
-
-	if skip > len(callers) {
-		return slog.Source{Function: "not available", File: "not available", Line: 0}
-	}
-
+	// fmt.Printf("%s(%d) %s\n", callers[0].File, callers[0].Line, callers[0].Function)
 	return callers[0]
 }
 
