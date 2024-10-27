@@ -284,7 +284,7 @@ func GetObjKindNamespaceName(obj k8sruntime.Object) (result []interface{}) {
 // number for the caller of this function and its caller moving up the stack for as many levels as
 // are available or the number of levels specified by the levels parameter.
 // Set the short parameter to true to only return final element of Function and source file name.
-func Callers(levels uint, short bool) ([]slog.Source, error) {
+func Callers(levels int, short bool) ([]slog.Source, error) {
 	var callers []slog.Source
 
 	if levels == 0 {
@@ -294,11 +294,11 @@ func Callers(levels uint, short bool) ([]slog.Source, error) {
 	fpcs := make([]uintptr, levels)
 
 	// Skip 1 levels to get to the caller of whoever called Callers().
-	n := runtime.Callers(1, fpcs)
+	n := runtime.Callers(levels, fpcs)
 	if n == 0 {
 		return nil, errNotAvailable
 	}
-	fmt.Printf("Frames: %d\n", n)
+
 	frames := runtime.CallersFrames(fpcs)
 
 	for {
@@ -323,10 +323,10 @@ func Callers(levels uint, short bool) ([]slog.Source, error) {
 			break
 		}
 	}
-	fmt.Printf("callers...\n")
-	for i, c := range callers {
-		fmt.Printf("%d: %s(%d) %s\n", i, c.File, c.Line, c.Function)
-	}
+	// fmt.Printf("callers...\n")
+	// for i, c := range callers {
+	// 	fmt.Printf("%d: %s(%d) %s\n", i, c.File, c.Line, c.Function)
+	// }
 	return callers, nil
 }
 
