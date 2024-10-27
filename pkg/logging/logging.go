@@ -321,7 +321,10 @@ func Callers(levels uint, short bool) ([]slog.Source, error) {
 			break
 		}
 	}
-
+	fmt.Printf("callers...\n")
+	for i, c := range callers {
+		fmt.Printf("%d: %s(%d) %s\n", i, c.File, c.Line, c.Function)
+	}
 	return callers, nil
 }
 
