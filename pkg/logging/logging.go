@@ -346,7 +346,7 @@ func GetCaller(skip int, short bool) slog.Source {
 		return slog.Source{Function: "not available", File: "not available", Line: 0}
 	}
 
-	return callers[skip-1]
+	return callers[0]
 }
 
 // CallerText generates a string containing caller function, source and line.
