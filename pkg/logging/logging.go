@@ -29,6 +29,8 @@ const (
 	// MyCallersCallersCaller is the setting for the function that called the function that called the function that called the function calling MyCaller.
 	MyCallersCallersCaller = 6
 
+	twelve = 12
+
 	stackDepth = 32
 
 	// logLevelEnvVar is the environmental variable name used to set the log level, defaults to INFO if not set.
@@ -137,7 +139,7 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 // setCallerSourceName is used to set to source information to the caller of the function calling log.
 func setCallerSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		source := GetCaller(MyCallersCaller, false)
+		source := GetCaller(twelve, false)
 		if sourcePathDepth >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
 			if len(path) < sourcePathDepth {
