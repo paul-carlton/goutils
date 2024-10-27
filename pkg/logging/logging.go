@@ -65,12 +65,11 @@ var (
 )
 
 func init() {
-	fmt.Printf("creating trace logger\n")
-	traceLog = traceLogger()
-	fmt.Printf("created trace logger...\n%+v\n", traceLog)
 	sourcePathDepth = setSourcePathDepth()
 	logSource = setSource()
 	LogLevel = setLogLevel()
+	fmt.Printf("Logging level: %d\n", LogLevel)
+	traceLog = traceLogger()
 }
 
 // setLogLevel returns the logging level selected by the user.
@@ -161,7 +160,6 @@ func setCallerSourceName(a slog.Attr) slog.Attr {
 // setSourceName is used to set to source file name, specifically the number of elements of the directory path to include.
 func setSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		sourcePathDepth := setSourcePathDepth()
 		if sourcePathDepth >= 0 {
 			source, ok := a.Value.Any().(*slog.Source)
 			if !ok {
@@ -219,9 +217,7 @@ func traceLogger() *slog.Logger {
 			return a
 		},
 	}
-
 	handler := slog.NewJSONHandler(os.Stdout, opts)
-	fmt.Printf("created trace handler...\n%+v\n", handler)
 	return slog.New(handler)
 }
 
@@ -361,7 +357,6 @@ func CallerText(skip int) string {
 // TraceCall traces calls and exit for functions.
 func TraceCall() {
 	ctx := context.Background()
-	fmt.Printf("Called TraceCall\n")
 	traceLog.Log(ctx, LevelTrace, "Entering function")
 }
 
