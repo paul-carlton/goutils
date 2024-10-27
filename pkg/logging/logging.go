@@ -68,7 +68,6 @@ func init() {
 	sourcePathDepth = setSourcePathDepth()
 	logSource = setSource()
 	LogLevel = setLogLevel()
-	fmt.Printf("Logging level: %d\n", LogLevel)
 	traceLog = traceLogger()
 }
 
@@ -138,7 +137,7 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 // setCallerSourceName is used to set to source information to the caller of the function calling log.
 func setCallerSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		source := GetCaller(MyCaller, false)
+		source := GetCaller(MyCallersCaller, false)
 		if sourcePathDepth >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
 			if len(path) < sourcePathDepth {
