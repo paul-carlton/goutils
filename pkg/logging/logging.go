@@ -29,7 +29,7 @@ const (
 	// MyCallersCallersCaller is the setting for the function that called the function that called the function that called the function calling MyCaller.
 	MyCallersCallersCaller = 6
 
-	twelve = 12
+	eleven = 11
 
 	stackDepth = 32
 
@@ -139,7 +139,7 @@ func setLogLevelName(a slog.Attr) slog.Attr {
 // setCallerSourceName is used to set to source information to the caller of the function calling log.
 func setCallerSourceName(a slog.Attr) slog.Attr {
 	if a.Key == slog.SourceKey { //nolint: nestif
-		source := GetCaller(twelve, false)
+		source := GetCaller(eleven, false)
 		if sourcePathDepth >= 0 {
 			path := strings.Split(filepath.Dir(source.File), "/")
 			if len(path) < sourcePathDepth {
