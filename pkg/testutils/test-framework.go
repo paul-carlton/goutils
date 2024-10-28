@@ -16,6 +16,8 @@ type (
 	ReportDiffI func(u TestUtil, name string, actual, expected interface{})
 	// ComparerI defines the comparer function interface.
 	ComparerI func(u TestUtil, name string, actual, expected interface{}) bool
+	// PostTestI defines function to be called after running a test.
+	PostTestI func(u TestUtil)
 
 	// GetFieldFunc is the function to call to get the value of a field of an object.
 	GetFieldFunc func(t *testing.T, obj interface{}, fieldName string) interface{}
@@ -56,8 +58,10 @@ type (
 		Expected    []interface{} // Test expected results.
 		Results     []interface{} // Test results.
 		ObjStatus   *ObjectStatus // Details of object under test including field names and expected values, used by CheckFunc to verify values.
-		// PrepFunc is function to be called before a test, leave unset to call default - which prints the test number and name.
+		// PrepFunc is function to be called before a test, leave unset to call default.
 		PrepFunc PrepTestI
+		// PostFunc is function to be called after a test, leave unset to call default.
+		PostFunc PostTestI
 		// CheckFunc is function to be called to check a test results, leave unset to call default.
 		// Default compares actual results with expected results and verifies object status.
 		CheckFunc CheckTestI
@@ -76,6 +80,7 @@ type (
 	// TestUtil the interface used to provide testing utilities.
 	TestUtil interface {
 		CallPrepFunc()                 // Call the custom or default test preparation function.
+		CallPostFunc()                 // Call the custom or default test tidy up function.
 		CallCheckFunc() bool           // Call the custom or default test checking function.
 		Testing() *testing.T           // testing object.
 		SetFailTests(value bool)       // Set the fail test setting to verify test check reporting.
@@ -132,6 +137,15 @@ func (u *testUtil) CallPrepFunc() {
 	}
 }
 
+// CallPostFunc calls the post test setup function.
+func (u *testUtil) CallPostFunc() {
+	DefaultPostFunc(u)
+
+	if u.testData.PostFunc != nil {
+		u.testData.PostFunc(u)
+	}
+}
+
 // CallCheckTestsFunc calls the check test result function.
 func (u *testUtil) CallCheckFunc() bool {
 	if u.testData.CheckFunc == nil {
@@ -176,12 +190,15 @@ func (u *testUtil) TestData() *DefTest {
 	return u.testData
 }
 
-// DefaultPrepFunc is the default pre test function that prints the test number and name.
+// DefaultPrepFunc is the default pre test function.
 func DefaultPrepFunc(u TestUtil) {
 	t := u.Testing()
 	test := u.TestData()
 	UnsetEnvs(t, test.EnvVars)
-	t.Logf("Test: %d, %s\n", test.Number, test.Description)
+}
+
+// DefaultPostFunc is the default post test function.
+func DefaultPostFunc(_ TestUtil) {
 }
 
 func (u *testUtil) ResultsReporter() {
