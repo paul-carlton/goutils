@@ -14,7 +14,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/nabancard/goutils/pkg/logging"
+	"github.com/nabancard/goutils/pkg/miscutils"
 )
 
 const (
@@ -65,8 +66,7 @@ type Header map[string]string
 // reqResp hold information relating to an HTTP(S) request and response.
 type reqResp struct {
 	ReqResp
-	ctx       context.Context
-	log       *slog.Logger
+	o         *miscutils.NewObjParams
 	client    *http.Client
 	transport *http.Transport
 	timeout   *time.Duration
@@ -88,8 +88,7 @@ type ReqResp interface {
 	RespCode() int
 }
 
-func NewReqResp(ctx context.Context, logger *slog.Logger,
-	timeout *time.Duration, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
+func NewReqResp(objParams *miscutils.NewObjParams, timeout *time.Duration, client *http.Client, transport http.RoundTripper) (ReqResp, error) {
 	logging.TraceCall()
 	defer logging.TraceExit()
 
@@ -101,17 +100,16 @@ func NewReqResp(ctx context.Context, logger *slog.Logger,
 		timeout = &DefaultTimeout
 	}
 
-	if ctx == nil {
-		ctx = context.Background()
+	if objParams.Ctx == nil {
+		objParams.Ctx = context.Background()
 	}
 
-	if logger == nil {
-		logger = logging.NewTextLogger()
+	if objParams.Log == nil {
+		objParams.Log = logging.NewTextLoggerTo(objParams.LogOut)
 	}
 
 	r := reqResp{
-		ctx:       ctx,
-		log:       logger,
+		o:         objParams,
 		transport: tr,
 		client:    nil,
 		timeout:   timeout,
@@ -146,7 +144,6 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 	var err error
 
 	if url.Scheme == "https" {
-		r.log.Log(r.ctx, slog.LevelDebug, "Creating HTTPS client")
 		r.client = &http.Client{
 			Transport: &http.Transport{
 				TLSClientConfig: &tls.Config{
@@ -155,7 +152,6 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 			},
 		}
 	} else {
-		r.log.Log(r.ctx, slog.LevelDebug, "Creating HTTP client")
 		r.client = &http.Client{Transport: r.transport}
 	}
 
@@ -173,29 +169,34 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 
 	r.url = url
 
-	r.log.Log(r.ctx, slog.LevelDebug, "Request", "method", *r.method, "url", r.url.String())
-
 	var inputJSON io.ReadCloser
 
-	if *r.method == Post {
+	if *r.method == Post { //nolint: nestif
 		var jsonBytes []byte
 		if b, ok := body.(string); ok {
+			if logging.LogLevel <= logging.LevelTrace {
+				r.o.Log.Log(r.o.Ctx, logging.LevelTrace, "body is a string, assuming it is valid json")
+			}
 			jsonBytes = []byte(b)
 		} else {
+			if logging.LogLevel <= logging.LevelTrace {
+				r.o.Log.Log(r.o.Ctx, logging.LevelTrace, "body is not a string, marshalling to json")
+			}
 			jsonBytes, err = json.Marshal(r.body)
 			if err != nil {
 				return requestBodyError(err.Error())
 			}
 		}
+		if logging.LogLevel <= logging.LevelTrace {
+			fmt.Fprintf(r.o.LogOut, "body...\n%s\n", jsonBytes)
+		}
 		inputJSON = io.NopCloser(bytes.NewReader(jsonBytes))
-
-		r.log.Log(r.ctx, slog.LevelDebug, "Payload", "body", string(jsonBytes))
 
 		r.headerFields["Content-Type"] = "application/json"
 		r.headerFields["Content-Length"] = fmt.Sprintf("%d", len(jsonBytes))
 	}
 
-	httpReq, err := http.NewRequestWithContext(r.ctx, *r.method, r.url.String(), inputJSON)
+	httpReq, err := http.NewRequestWithContext(r.o.Ctx, *r.method, r.url.String(), inputJSON)
 	if err != nil {
 		return readingResponseBodyError(err.Error())
 	}
@@ -206,14 +207,15 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 		}
 	}
 
+	r.o.Log.Debug("sending to", "url", url.String())
+
 	retries := 30
 	seconds := 1
 	start := time.Now()
-	r.log.Log(r.ctx, slog.LevelDebug, "Sending request", slog.Time("start", start))
 	for {
 		r.resp, err = r.client.Do(httpReq) //nolint:bodyclose // ok
 		if err != nil {                    //nolint:nestif // ok
-			r.log.Warn("failed to send request", slog.String("error", err.Error()))
+			r.o.Log.Warn("failed to send request", slog.String("error", err.Error()))
 			if strings.Contains(err.Error(), "connection refused") ||
 				strings.Contains(err.Error(), "http2: no cached connection was available") ||
 				strings.Contains(err.Error(), "net/http: TLS handshake timeout") ||
@@ -231,20 +233,17 @@ func (r *reqResp) HTTPreq(method *string, url *url.URL, body interface{}, header
 				}
 
 				if retries > 0 || time.Since(start) > *r.timeout {
-					r.log.Warn("server failed to respond", "url", r.url)
-					r.log.Warn("retrying")
+					r.o.Log.Warn("server failed to respond", "url", r.url)
+					r.o.Log.Warn("retrying")
 					continue
 				}
 			}
 
 			return err
 		}
-		r.log.Log(r.ctx, logging.LevelTrace, "sent request")
 		if err := r.getRespBody(); err != nil {
 			return err
 		}
-
-		r.log.Log(r.ctx, slog.LevelDebug, "got reply", slog.Int("code", r.resp.StatusCode), "reply", *r.respText)
 
 		if r.resp.StatusCode == 200 || (r.resp.StatusCode == 201 && *r.method == Post) ||
 			(r.resp.StatusCode == 204 && *r.method == Delete) {

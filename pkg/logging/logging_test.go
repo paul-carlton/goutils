@@ -4,8 +4,8 @@ import (
 	"log/slog"
 	"testing"
 
-	"github.com/paul-carlton/goutils/pkg/logging"
-	"github.com/paul-carlton/goutils/pkg/testutils"
+	"github.com/nabancard/goutils/pkg/logging"
+	"github.com/nabancard/goutils/pkg/testutils"
 )
 
 func TestGetObjLabel(t *testing.T) {

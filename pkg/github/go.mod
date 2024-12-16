@@ -1,22 +1,19 @@
-module github.com/nabancard/goutils/pkg/miscutils
+module github.com/nabancard/goutils/pkg/github
 
 go 1.23.2
 
-replace github.com/nabancard/goutils/pkg/logging => ../logging
-
-replace github.com/nabancard/goutils/pkg/testutils => ../testutils
-
-replace github.com/nabancard/goutils/pkg/httpclient => ../httpclient
-
 require (
-	github.com/fatih/color v1.18.0
-	github.com/nabancard/goutils/pkg/logging v0.0.0-00010101000000-000000000000
+	github.com/google/go-github/v66 v66.0.0
+	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc9
+	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 )
 
 require (
+	github.com/fatih/color v1.18.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.7.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
+	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/google/gofuzz v1.2.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect

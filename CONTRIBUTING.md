@@ -12,7 +12,7 @@ This document will provide help on how to go about this. You can contribute in t
 
 Reporting bugs is an essential part in making goutils better for its end users.
 
-Bugs are reported using GitHub issues. A new **Bug Report** can be raised [here](https://github.com/paul-carlton/goutils/issues/new?assignees=&labels=kind%2Fbug&template=bug_report.md&title=).
+Bugs are reported using GitHub issues. A new **Bug Report** can be raised [here](https://github.com/nabancard/goutils/issues/new?assignees=&labels=kind%2Fbug&template=bug_report.md&title=).
 
 When raising bugs please include as much information as possible including steps about how to reproduce the problem and what you expect the behavior to be.
 
@@ -20,7 +20,7 @@ When raising bugs please include as much information as possible including steps
 
 If there is a feature that you would like in goutils then please let us know about it.
 
-Features are also suggested using GitHub Issues. A new **Feature enhancement request** can be raised [here](https://github.com/paul-carlton/goutils/issues/new?labels=kind%2Ffeature&template=feature_request.md&title=).
+Features are also suggested using GitHub Issues. A new **Feature enhancement request** can be raised [here](https://github.com/nabancard/goutils/issues/new?labels=kind%2Ffeature&template=feature_request.md&title=).
 
 Include as much information as possible, understanding the problem that the feature is trying to solve will really help us in understanding the benefit.
 
@@ -30,8 +30,8 @@ Code contributions to goutils are very welcome.
 
 If you need a pointer on where to start you can look at the **good first issue** and **help wanted** issues:
 
-* [good first issue](https://github.com/paul-carlton/goutils/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - small changes that are suitable for a beginner
-* [help wanted](https://github.com/paul-carlton/goutils/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) - more involved changes
+* [good first issue](https://github.com/nabancard/goutils/issues?q=is%3Aissue+is%3Aopen+label%3A%22good+first+issue%22) - small changes that are suitable for a beginner
+* [help wanted](https://github.com/nabancard/goutils/issues?q=is%3Aissue+is%3Aopen+label%3A%22help+wanted%22) - more involved changes
 
 You can also choose your own issue to work on from this list of available issues.
 

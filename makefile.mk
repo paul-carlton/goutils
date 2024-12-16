@@ -108,5 +108,5 @@ gomod-update: go.mod ${PROJECT_SOURCES}
 	go build ./... && \
 	echo "${YELLOW}go mod tidy${NC}" && \
 	go mod tidy && \
-	echo "${YELLOW}go mod download${NC}" && \
-	go mod download
+	echo "${YELLOW}go work vendor${NC}" && \
+	go work vendor

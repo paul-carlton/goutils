@@ -60,17 +60,18 @@ var (
 	sourcePathDepth int //nolint: gochecknoglobals
 	// LogLevel contains the logging level set.
 	LogLevel  slog.Level //nolint: gochecknoglobals
+	LogOut    io.Writer  //nolint: gochecknoglobals
 	logSource bool       //nolint: gochecknoglobals
 
 	// traceLog is used by trace logging functions that replace the source information with the callers source info.
-	traceLog *slog.Logger //nolint: gochecknoglobals
+	TraceLog *slog.Logger //nolint: gochecknoglobals
 )
 
 func init() {
 	sourcePathDepth = setSourcePathDepth()
 	logSource = setSource()
 	LogLevel = setLogLevel()
-	traceLog = traceLogger()
+	TraceLog = TraceLogger(os.Stderr)
 }
 
 // setLogLevel returns the logging level selected by the user.
@@ -94,6 +95,26 @@ func setLogLevel() slog.Level {
 		}
 	}
 	return slog.LevelInfo
+}
+
+// GetLogLevel gets the log level as set by environmental variable.
+func GetLogLevel() string {
+	return LogLevel.String()
+}
+
+// SetLogLevel sets the log level from environmental variable.
+func SetLogLevel() {
+	LogLevel = setLogLevel()
+}
+
+// GetLogOut gets the log output io.Writer.
+func GetLogOut() io.Writer {
+	return LogOut
+}
+
+// SetLogOut sets the log output io.Writer.
+func SetLogOut(out io.Writer) {
+	LogOut = out
 }
 
 // setSource set the user preference to include or exclude source file information in log messages.
@@ -208,7 +229,7 @@ func NewLogger() *slog.Logger {
 }
 
 // traceLogger returns a logger for internal use by tracing that replaces the source details with supplied values.
-func traceLogger() *slog.Logger {
+func TraceLogger(out io.Writer) *slog.Logger {
 	opts := &slog.HandlerOptions{
 		Level:     LogLevel,
 		AddSource: true,
@@ -218,11 +239,23 @@ func traceLogger() *slog.Logger {
 			return a
 		},
 	}
-	handler := slog.NewJSONHandler(os.Stdout, opts)
+
+	handler := slog.NewJSONHandler(out, opts)
 	return slog.New(handler)
 }
 
 // NewTextLogger returns a text logger.
+func NewTextLoggerTo(out io.Writer) *slog.Logger {
+	opts := &slog.HandlerOptions{
+		Level: LogLevel,
+	}
+
+	handler := slog.NewTextHandler(out, opts)
+
+	return slog.New(handler)
+}
+
+// NewTextLoggerTo returns a text logger logging to provided output.
 func NewTextLogger() *slog.Logger {
 	opts := &slog.HandlerOptions{
 		Level: LogLevel,
@@ -347,13 +380,29 @@ func CallerText(skip int) string {
 // TraceCall traces calls and exit for functions.
 func TraceCall() {
 	ctx := context.Background()
-	traceLog.Log(ctx, LevelTrace, "Entering function")
+	TraceLog.Log(ctx, LevelTrace, "Entering function")
 }
 
 // TraceExit traces calls and exit for functions.
 func TraceExit() {
 	ctx := context.Background()
-	traceLog.Log(ctx, LevelTrace, "Exiting function")
+	TraceLog.Log(ctx, LevelTrace, "Exiting function")
+}
+
+// TraceCallWithCtx traces calls and exit for functions.
+func TraceCallWithCtx(ctx context.Context) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	TraceLog.Log(ctx, LevelTrace, "Entering function")
+}
+
+// TraceExitWithCtx traces calls and exit for functions.
+func TraceExitWithCtx(ctx context.Context) {
+	if ctx == nil {
+		ctx = context.Background()
+	}
+	TraceLog.Log(ctx, LevelTrace, "Exiting function")
 }
 
 // ToJSON is used get data in JSON format.
@@ -377,6 +426,7 @@ func ToJSON(log *slog.Logger, data interface{}) string {
 	return prettyJSON.String()
 }
 
+// Debug can be used to emit debug output.
 func Debug(pattern string, args ...interface{}) {
 	if LogLevel <= slog.LevelDebug {
 		pattern := CallerText(MyCallersCaller) + pattern

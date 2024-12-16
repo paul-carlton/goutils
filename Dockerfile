@@ -1,7 +1,7 @@
 FROM golang:1.22 as builder
 
 ARG VERSION
-WORKDIR /go/src/github.com/paul-carlton/goutils
+WORKDIR /go/src/github.com/nabancard/goutils
 COPY . .
 RUN make
 

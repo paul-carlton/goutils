@@ -1,186 +1,55 @@
 package miscutils
 
 import (
+	"bufio"
+	"bytes"
+	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
+	"io"
+	"log/slog"
+	"os"
 	"reflect"
 	"strings"
+	"time"
+
+	"github.com/fatih/color"
+
+	"github.com/nabancard/goutils/pkg/logging"
 )
 
-/*
-// MapKeysToList returns the keys of a map[string]string as a list.
-func MapKeysToList(theMap map[string]string) []string {
-	keys := make([]string, 0, len(theMap))
-
-	for k := range theMap {
-		keys = append(keys, k)
-	}
-
-	return keys
+type NewObjParams struct {
+	Ctx    context.Context
+	Log    *slog.Logger
+	LogOut io.Writer
 }
 
-// GetAddrPort get Address and Port from: 'protocol://address:port/...'
-func GetAddrPort(URL, defPort string) (string, string, string) {
-	if strings.Contains(URL, "://") {
-		// strip protocol
-		URL = URL[strings.Index(URL, ":")+2:]
-	}
-	if strings.Contains(URL, "/") {
-		URL = URL[:strings.Index(URL, "/")]
-	}
-	split := strings.Index(URL, ":")
-	theAddr := URL
-	thePort := defPort
-	theAddrPort := fmt.Sprintf("%s:%s", URL, defPort)
-	if split > 0 {
-		theAddr = URL[:split]
-		thePort = URL[split+1:]
-		theAddrPort = fmt.Sprintf("%s:%s", theAddr, thePort)
-	}
-	return theAddrPort, theAddr, thePort
+type Utils struct {
+	MiscUtils
+	logger *slog.Logger
 }
 
-
-// GetFilesList is used for debugging purposes to list the files in the specified directory subtree
-func GetFilesList(dir string) ([]string, error) {
-	fileList := []string{}
-	files, err := io.ReadDir(dir)
-	SecLog.Debugf("directory: %s", dir)
-	if err != nil {
-		errMsg := fmt.Sprintf("failed to process directory: %s", dir)
-		return nil, RetErr(errMsg, err)
-	}
-	for _, file := range files {
-		subDir := dir
-		if file.IsDir() {
-			subDir = dir + "/" + file.Name()
-			SecLog.Debugf("sub directory: %s", subDir)
-			subFileList, err := GetFilesList(subDir)
-			if err != nil {
-				errMsg := fmt.Sprintf("failed to process subdirectory: %s", subDir)
-				return nil, RetErr(errMsg, err)
-			}
-			fileList = append(fileList, subFileList...)
-			continue
-		}
-		fileList = append(fileList, subDir+"/"+file.Name())
-		SecLog.Debugf("file path: %s", subDir+"/"+file.Name())
-
-	}
-	return fileList, nil
+type MiscUtils interface {
+	StringToFile(f *os.File, text string) error
 }
 
-// OpenOrCreate opens or creates a file returning file descriptor
-func OpenOrCreate(fileName string) (*os.File, error) {
-	lastSlash := strings.LastIndex(fileName, "/")
-	if lastSlash < 0 {
-		lastSlash = 0
-	}
-	dir := fileName[:lastSlash]
-	if len(dir) > 0 {
-		err := os.MkdirAll(dir, os.FileMode(0755))
-		if err != nil {
-			return nil, RetErr("failed to create directory", err)
-		}
-	}
-	file, err := os.OpenFile(fileName, os.O_WRONLY|os.O_APPEND, os.ModeAppend)
-	if err != nil {
-		if os.IsNotExist(err) {
-			file, err = os.Create(fileName)
-			if err != nil {
-				return nil, RetErr(fmt.Sprintf("failed to create file: %s", fileName), err)
-			}
-		} else {
-			return nil, RetErr(fmt.Sprintf("failed to open file: %s", fileName), err)
-		}
-	}
-	return file, nil
+func NewMiscUtils(logger *slog.Logger) MiscUtils {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
+	return &Utils{logger: logger}
 }
 
-// StringToFile writes a string to a file
-func StringToFile(fileName, data string, truncate bool) error {
-	defer TraceExit(Trace())
+func (u *Utils) StringToFile(f *os.File, text string) error {
+	logging.TraceCall()
+	defer logging.TraceExit()
 
-	file, err := OpenOrCreate(fileName)
-	if err != nil {
-		return RetErr(fmt.Sprintf("failed to open or create file: %s", fileName), err)
-	}
-	defer file.Close()
-
-	if truncate {
-		err = file.Truncate(0)
-		if err != nil {
-			return NewError("failed to truncate file %s, %s", fileName, err)
-		}
-		_, err = file.Seek(0, 0)
-		if err != nil {
-			return NewError("failed to reset write position to start of file %s, %s", fileName, err)
-		}
-	}
-
-	_, err = file.WriteString(data)
-	if err != nil {
-		return RetErr(fmt.Sprintf("failed to write data to file: %s", fileName), err)
+	if _, err := f.WriteString(text); err != nil {
+		return logging.ErrorReport(fmt.Sprintf("failed to write to %s file", f.Name()), err)
 	}
 	return nil
 }
-
-// compareStringArray string arrays sorting them to verify that they contain
-// equivalent information
-func compareStringArray(one, two []string) bool {
-	if len(one) != len(two) {
-		return false
-	}
-	sort.Strings(one)
-	sort.Strings(two)
-	for index, field := range one {
-		if field != two[index] {
-			return false
-		}
-	}
-	return true
-}
-
-/* func decryptWithKey(ciphertext []byte, key *[32]byte) (plaintext []byte, err error) {
-	defer TraceExit(Trace())
-
-	block, err := aes.NewCipher(key[:])
-	if err != nil {
-		return nil, RetErr("NewCipher failed", err)
-	}
-
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, RetErr("NewGCM failed", err)
-	}
-
-	if len(ciphertext) < gcm.NonceSize() {
-		return nil, NewError("malformed ciphertext")
-	}
-
-	return gcm.Open(nil, ciphertext[:gcm.NonceSize()], ciphertext[gcm.NonceSize():], nil)
-}
-
-func encryptWithKey(plaintext []byte, key *[32]byte) (ciphertext []byte, err error) {
-	defer TraceExit(Trace())
-
-	block, err := aes.NewCipher(key[:])
-	if err != nil {
-		return nil, RetErr("NewCipher failed", err)
-	}
-
-	gcm, err := cipher.NewGCM(block)
-	if err != nil {
-		return nil, RetErr("NewGCM failed", err)
-	}
-
-	nonce := make([]byte, gcm.NonceSize())
-	_, err = io.ReadFull(rand.Reader, nonce)
-	if err != nil {
-		return nil, RetErr("unable to obtain random data", err)
-	}
-
-	return gcm.Seal(nonce, nonce, plaintext, nil), nil
-} */
 
 // Max returns the maximum of two integers.
 func Max(a, b int) int {
@@ -221,4 +90,101 @@ func TypeExaminer(t reflect.Type, depth int, data interface{}) string {
 		}
 	}
 	return details
+}
+
+// IndentJSON is used generate json data indented.
+func IndentJSON(data interface{}, offset, indent int) string {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return err.Error()
+	}
+
+	var prettyJSON bytes.Buffer
+	err = json.Indent(&prettyJSON, jsonData, strings.Repeat(" ", offset*indent), strings.Repeat(" ", indent))
+	if err != nil {
+		return err.Error()
+	}
+
+	return prettyJSON.String()
+}
+
+// CheckError - panics if error.
+func CheckError(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+// PrettyPrint - outputs interface in json.
+func PrettyPrint(i interface{}) (string, error) {
+	s, err := json.MarshalIndent(i, "", "\t")
+	return string(s), err
+}
+
+func CopyFile(src, dst string) {
+	source, err := os.Open(src)
+	CheckError(err)
+	defer source.Close()
+
+	destination, err := os.Create(dst)
+	CheckError(err)
+	defer destination.Close()
+
+	_, err = io.Copy(destination, source)
+	CheckError(err)
+}
+
+func Exists(name string) (bool, error) {
+	_, err := os.Stat(name)
+	if err == nil {
+		return true, nil
+	}
+	if errors.Is(err, os.ErrNotExist) {
+		return false, nil
+	}
+	return false, err
+}
+
+func ValidateTimestamp(timeStamp, format string) error {
+	_, err := time.Parse(format, timeStamp)
+	return err
+}
+
+func PromptUsageWarning(o *NewObjParams) {
+	fmt.Println("WARNING: this tool will run destructive tasks on the current Cluster.")
+	fmt.Println("Please ensure you are authenticated to the correct cluster before proceeding")
+	scanner := bufio.NewScanner(os.Stdin)
+	color.New(color.Bold, color.FgHiWhite).Printf("Continue with restore: y/N \n")
+	scanner.Scan()
+	input := scanner.Text()
+	yes := "y"
+	if input != yes {
+		LogErrorFatal(o, "exiting script")
+		os.Exit(1)
+	}
+}
+
+func LogWarning(o *NewObjParams, text string) {
+	warnOutput := color.New(color.FgYellow).SprintFunc()
+	o.Log.Warn(warnOutput(text))
+}
+
+func LogInfo(o *NewObjParams, text string) {
+	infoOutput := color.New(color.FgGreen).SprintFunc()
+	o.Log.Info(infoOutput(text))
+}
+
+func LogInfoBlue(o *NewObjParams, text string) {
+	infoOutput := color.New(color.Bold, color.FgBlue).SprintFunc()
+	o.Log.Info(infoOutput(text))
+}
+
+func LogError(o *NewObjParams, text string) {
+	errorOutput := color.New(color.FgRed).SprintFunc()
+	o.Log.Error(errorOutput(text))
+}
+
+func LogErrorFatal(o *NewObjParams, text string) {
+	errorOutput := color.New(color.FgRed).SprintFunc()
+	o.Log.Log(o.Ctx, logging.LevelFatal, errorOutput(text))
 }

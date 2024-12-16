@@ -1,11 +1,19 @@
-module github.com/paul-carlton/goutils/pkg/testutils
+module github.com/nabancard/goutils/pkg/testutils
 
 go 1.23.2
+
+replace github.com/nabancard/goutils/pkg/logging => ../logging
+
+replace github.com/nabancard/goutils/pkg/testutils => ../testutils
+
+replace github.com/nabancard/goutils/pkg/httpclient => ../httpclient
+
+replace github.com/nabancard/goutils/pkg/miscutils => ../miscutils
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/kylelemons/godebug v1.1.0
-	github.com/paul-carlton/goutils/pkg/logging v0.2.18
+	github.com/nabancard/goutils/pkg/logging v0.0.0-00010101000000-000000000000
 )
 
 require (
@@ -21,7 +29,7 @@ require (
 	golang.org/x/text v0.16.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	k8s.io/apimachinery v0.31.1 // indirect
+	k8s.io/apimachinery v0.31.2 // indirect
 	k8s.io/klog/v2 v2.130.1 // indirect
 	k8s.io/utils v0.0.0-20240711033017-18e509b52bc8 // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect

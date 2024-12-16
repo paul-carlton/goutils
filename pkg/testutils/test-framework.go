@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"testing"
+
+	"github.com/nabancard/goutils/pkg/logging"
 )
 
 type (
@@ -52,6 +54,7 @@ type (
 	DefTest struct {
 		Number      int           // Test number.
 		Description string        // Test description.
+		Result      bool          // The result of the test.
 		EnvVars     []string      // List of environmental variable to be reset at the start of each test
 		Config      interface{}   // Test configuration information to be used by test function or custom pre/post test functions.
 		Inputs      []interface{} // Test inputs.
@@ -87,6 +90,8 @@ type (
 		FailTests() bool               // Get the fail test setting.
 		SetVerbose(value bool)         // Set the verbose setting.
 		Verbose() bool                 // Get the verbose setting.
+		Result() bool                  // Return the result of the test.
+		SetResult(value bool)          // Set the result of the test.
 		SetTestData(testData *DefTest) // Set the test data.
 		TestData() *DefTest            // Get the test data.
 		// ResultsComparer calls the specified comparer, default checking function calls this to call test data's CompareFunc or CompareReflectDeepEqual if not set.
@@ -170,6 +175,16 @@ func (u *testUtil) Verbose() bool {
 	return u.verbose
 }
 
+// Result returns the result of the test.
+func (u *testUtil) Result() bool {
+	return u.TestData().Result
+}
+
+// SetResult sets the tests result.
+func (u *testUtil) SetResult(value bool) {
+	u.TestData().Result = value
+}
+
 // SetFailTests sets the fail tests flag.
 func (u *testUtil) SetFailTests(value bool) {
 	u.failTests = value
@@ -192,6 +207,9 @@ func (u *testUtil) TestData() *DefTest {
 
 // DefaultPrepFunc is the default pre test function.
 func DefaultPrepFunc(u TestUtil) {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	t := u.Testing()
 	test := u.TestData()
 	UnsetEnvs(t, test.EnvVars)
@@ -202,6 +220,9 @@ func DefaultPostFunc(_ TestUtil) {
 }
 
 func (u *testUtil) ResultsReporter() {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	test := u.TestData()
 	if test.ResultsReportFunc == nil {
 		if test.FieldReportFunc == nil {
@@ -218,6 +239,9 @@ func (u *testUtil) ResultsReporter() {
 }
 
 func (u *testUtil) FieldReporter(name string, actual, expected interface{}) {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	test := u.TestData()
 	if test.FieldReportFunc == nil {
 		ReportSpew(u, name, actual, expected)
@@ -229,7 +253,11 @@ func (u *testUtil) FieldReporter(name string, actual, expected interface{}) {
 }
 
 func (u *testUtil) ResultsComparer() bool {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	test := u.TestData()
+	t := u.Testing()
 	passed := false
 
 	if test.ResultsCompareFunc == nil { //nolint: nestif
@@ -239,6 +267,9 @@ func (u *testUtil) ResultsComparer() bool {
 			for index := range len(test.Results) {
 				passed = test.FieldCompareFunc(u, fmt.Sprintf("%d", index), test.Results[index], test.Expected[index])
 				if !passed {
+					if u.Verbose() {
+						t.Logf("result field; %d, failed", index)
+					}
 					break
 				}
 			}
@@ -255,20 +286,40 @@ func (u *testUtil) ResultsComparer() bool {
 }
 
 func (u *testUtil) FieldComparer(name string, actual, expected interface{}) bool {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	test := u.TestData()
 	if test.FieldCompareFunc == nil {
 		return CompareReflectDeepEqual(actual, expected)
 	}
 
-	return test.FieldCompareFunc(u, name, actual, expected)
+	u.SetResult(test.FieldCompareFunc(u, name, actual, expected))
+	if u.Verbose() {
+		t := u.Testing()
+		t.Logf("Field comparer returned: %t", u.Result())
+	}
+	return u.Result()
 }
 
 // DefaultCheckFunc is the default check test function that compares actual and expected.
 func DefaultCheckFunc(u TestUtil) bool {
-	return u.ResultsComparer() && CheckObjStatusFunc(u)
+	logging.TraceCall()
+	defer logging.TraceExit()
+
+	result := u.ResultsComparer() && CheckObjStatusFunc(u)
+	u.SetResult(result)
+	if u.Verbose() {
+		t := u.Testing()
+		t.Logf("Test result: %t", u.Result())
+	}
+	return result
 }
 
 // CheckObjStatusFunc checks object fields values against expected and report if different.
 func CheckObjStatusFunc(u TestUtil) bool {
+	logging.TraceCall()
+	defer logging.TraceExit()
+
 	return CheckFieldsValue(u) && CheckFieldsGetter(u)
 }

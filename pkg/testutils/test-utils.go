@@ -14,7 +14,7 @@ import (
 	"github.com/davecgh/go-spew/spew"
 	"github.com/kylelemons/godebug/diff"
 
-	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/nabancard/goutils/pkg/logging"
 )
 
 const (

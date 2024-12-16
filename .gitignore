@@ -8,3 +8,6 @@ pkg/**/*.md
 vendor/
 **/._shellcheck
 *.code-workspace
+go.work.sum
+go.sum
+**/go.sum

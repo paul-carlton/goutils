@@ -3,3 +3,12 @@ use ./pkg/logging
 use ./pkg/httpclient
 use ./pkg/testutils
 use ./pkg/miscutils
+use ./pkg/miscutils/mocks
+use ./pkg/aws
+use ./pkg/aws/s3
+use ./pkg/aws/ecr
+use ./pkg/aws/eks
+use ./pkg/k8s
+use ./pkg/k8s/fake
+use ./pkg/github
+use ./pkg/slack
