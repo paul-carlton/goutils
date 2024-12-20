@@ -1,11 +1,11 @@
-module github.com/nabancard/goutils/pkg/slack
+module github.com/paul-carlton/goutils/pkg/slack
 
 go 1.23.2
 
 require (
-	github.com/nabancard/goutils/pkg/httpclient v0.1.6-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/httpclient v0.1.6-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 )
 
 require (

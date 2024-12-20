@@ -6,7 +6,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	"github.com/nabancard/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 func (k *k8s) GetConfigMapData(name, namespace string) (map[string]string, error) {

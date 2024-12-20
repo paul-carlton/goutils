@@ -9,8 +9,8 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	k8swait "k8s.io/apimachinery/pkg/util/wait"
 
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 func (k *k8s) DeleteCronJob(name, namespace string, gracePeriod int64, waitFor time.Duration) error {

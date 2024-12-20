@@ -8,8 +8,8 @@ import (
 	"time"
 
 	githubapi "github.com/google/go-github/v66/github"
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 const (

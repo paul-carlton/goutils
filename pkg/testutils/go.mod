@@ -1,19 +1,19 @@
-module github.com/nabancard/goutils/pkg/testutils
+module github.com/paul-carlton/goutils/pkg/testutils
 
 go 1.23.2
 
-replace github.com/nabancard/goutils/pkg/logging => ../logging
+replace github.com/paul-carlton/goutils/pkg/logging => ../logging
 
-replace github.com/nabancard/goutils/pkg/testutils => ../testutils
+replace github.com/paul-carlton/goutils/pkg/testutils => ../testutils
 
-replace github.com/nabancard/goutils/pkg/httpclient => ../httpclient
+replace github.com/paul-carlton/goutils/pkg/httpclient => ../httpclient
 
-replace github.com/nabancard/goutils/pkg/miscutils => ../miscutils
+replace github.com/paul-carlton/goutils/pkg/miscutils => ../miscutils
 
 require (
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc
 	github.com/kylelemons/godebug v1.1.0
-	github.com/nabancard/goutils/pkg/logging v0.0.0-00010101000000-000000000000
+	github.com/paul-carlton/goutils/pkg/logging v0.0.0-00010101000000-000000000000
 )
 
 require (

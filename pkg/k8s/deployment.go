@@ -9,8 +9,8 @@ import (
 	k8stypes "k8s.io/apimachinery/pkg/types"
 	k8swait "k8s.io/apimachinery/pkg/util/wait"
 
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 )

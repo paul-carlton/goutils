@@ -10,9 +10,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 
-	"github.com/nabancard/goutils/pkg/aws"
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/aws"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/smithy-go/middleware"

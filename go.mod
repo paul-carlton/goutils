@@ -1,3 +1,3 @@
-module github.com/nabancard/goutils
+module github.com/paul-carlton/goutils
 
 go 1.23.2

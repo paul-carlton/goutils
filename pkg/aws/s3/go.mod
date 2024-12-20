@@ -1,4 +1,4 @@
-module github.com/nabancard/goutils/pkg/aws/s3
+module github.com/paul-carlton/goutils/pkg/aws/s3
 
 go 1.23.2
 
@@ -7,9 +7,9 @@ require (
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.43
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.71.0
 	github.com/aws/smithy-go v1.22.1
-	github.com/nabancard/goutils/pkg/aws v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/aws v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 )
 
 require (

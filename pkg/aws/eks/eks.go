@@ -15,9 +15,9 @@ import (
 	"k8s.io/client-go/rest"
 	"sigs.k8s.io/aws-iam-authenticator/pkg/token"
 
-	"github.com/nabancard/goutils/pkg/aws"
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/aws"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 type clusters struct {

@@ -1,4 +1,4 @@
-module github.com/nabancard/goutils/pkg/miscutils/mocks
+module github.com/paul-carlton/goutils/pkg/miscutils/mocks
 
 go 1.23.2
 

@@ -4,11 +4,11 @@ This repository contains testing and development utilities.
 
 ## Setup
 
-clone into $GOPATH/src/github.com/nabancard/goutils:
+clone into $GOPATH/src/github.com/paul-carlton/goutils:
 
-    mkdir -p $GOPATH/src/github.com/nabancard
-    cd $GOPATH/src/github.com/nabancard
-    git clone git@github.com:nabancard/goutils.git
+    mkdir -p $GOPATH/src/github.com/paul-carlton
+    cd $GOPATH/src/github.com/paul-carlton
+    git clone git@github.com:paul-carlton/goutils.git
     cd goutils
 
 This project requires the following software:

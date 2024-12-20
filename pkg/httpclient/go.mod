@@ -1,18 +1,18 @@
-module github.com/nabancard/goutils/pkg/httpclient
+module github.com/paul-carlton/goutils/pkg/httpclient
 
 go 1.23.2
 
-replace github.com/nabancard/goutils/pkg/logging => ../logging
+replace github.com/paul-carlton/goutils/pkg/logging => ../logging
 
-replace github.com/nabancard/goutils/pkg/testutils => ../testutils
+replace github.com/paul-carlton/goutils/pkg/testutils => ../testutils
 
-replace github.com/nabancard/goutils/pkg/httpclient => ../httpclient
+replace github.com/paul-carlton/goutils/pkg/httpclient => ../httpclient
 
-replace github.com/nabancard/goutils/pkg/miscutils => ../miscutils
+replace github.com/paul-carlton/goutils/pkg/miscutils => ../miscutils
 
 require (
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 )
 
 require (

@@ -1,4 +1,4 @@
-module github.com/nabancard/goutils/pkg/aws
+module github.com/paul-carlton/goutils/pkg/aws
 
 go 1.23.2
 
@@ -7,8 +7,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.28.6
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.2
 	github.com/aws/smithy-go v1.22.1
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc6
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc6
 )
 
 require (

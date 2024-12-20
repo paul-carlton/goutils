@@ -12,8 +12,8 @@ import (
 	k8swait "k8s.io/apimachinery/pkg/util/wait"
 	v1pod "k8s.io/kubernetes/pkg/api/v1/pod"
 
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 func (k *k8s) GetPodsFromLabelSelector(selector, namespace string) (*corev1.PodList, error) {

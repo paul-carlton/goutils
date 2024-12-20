@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/nabancard/goutils/pkg/testutils"
+	"github.com/paul-carlton/goutils/pkg/testutils"
 )
 
 func TestContainsStringArray(t *testing.T) {

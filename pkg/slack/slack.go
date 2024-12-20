@@ -7,9 +7,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/nabancard/goutils/pkg/httpclient"
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/httpclient"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 type messageBody struct {

@@ -3,7 +3,7 @@ package k8s
 import (
 	"fmt"
 
-	"github.com/nabancard/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 // convertLabelsToSelectorString converts map app: testapp to string app=testapp.

@@ -14,10 +14,10 @@ import (
 	semver "github.com/Masterminds/semver/v3"
 	awsecr "github.com/aws/aws-sdk-go-v2/service/ecr"
 	awsecrtypes "github.com/aws/aws-sdk-go-v2/service/ecr/types"
-	"github.com/nabancard/goutils/pkg/aws"
-	"github.com/nabancard/goutils/pkg/httpclient"
-	"github.com/nabancard/goutils/pkg/logging"
-	"github.com/nabancard/goutils/pkg/miscutils"
+	"github.com/paul-carlton/goutils/pkg/aws"
+	"github.com/paul-carlton/goutils/pkg/httpclient"
+	"github.com/paul-carlton/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/miscutils"
 )
 
 type index struct {

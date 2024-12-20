@@ -16,7 +16,7 @@ import (
 
 	"github.com/fatih/color"
 
-	"github.com/nabancard/goutils/pkg/logging"
+	"github.com/paul-carlton/goutils/pkg/logging"
 )
 
 type NewObjParams struct {

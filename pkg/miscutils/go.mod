@@ -1,16 +1,16 @@
-module github.com/nabancard/goutils/pkg/miscutils
+module github.com/paul-carlton/goutils/pkg/miscutils
 
 go 1.23.2
 
-replace github.com/nabancard/goutils/pkg/logging => ../logging
+replace github.com/paul-carlton/goutils/pkg/logging => ../logging
 
-replace github.com/nabancard/goutils/pkg/testutils => ../testutils
+replace github.com/paul-carlton/goutils/pkg/testutils => ../testutils
 
-replace github.com/nabancard/goutils/pkg/httpclient => ../httpclient
+replace github.com/paul-carlton/goutils/pkg/httpclient => ../httpclient
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/nabancard/goutils/pkg/logging v0.0.0-00010101000000-000000000000
+	github.com/paul-carlton/goutils/pkg/logging v0.0.0-00010101000000-000000000000
 )
 
 require (

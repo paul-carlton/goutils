@@ -1,9 +1,9 @@
-module github.com/nabancard/goutils/pkg/logging
+module github.com/paul-carlton/goutils/pkg/logging
 
 go 1.23.2
 
 require (
-	github.com/nabancard/goutils/pkg/testutils v0.1.4
+	github.com/paul-carlton/goutils/pkg/testutils v0.1.4
 	k8s.io/apimachinery v0.31.2
 )
 

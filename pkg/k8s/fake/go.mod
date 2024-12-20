@@ -1,4 +1,4 @@
-module github.com/nabancard/goutils/pkg/k8s/fake
+module github.com/paul-carlton/goutils/pkg/k8s/fake
 
 go 1.23.2
 

@@ -1,4 +1,4 @@
-module github.com/nabancard/goutils/pkg/k8s
+module github.com/paul-carlton/goutils/pkg/k8s
 
 go 1.23.2
 
@@ -6,8 +6,8 @@ require (
 	github.com/fluxcd/kustomize-controller/api v1.4.0
 	github.com/fluxcd/pkg/apis/meta v1.6.1
 	github.com/fluxcd/source-controller/api v1.4.1
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 	github.com/sykesm/zap-logfmt v0.0.4
 	go.uber.org/zap v1.26.0
 	k8s.io/api v0.31.3

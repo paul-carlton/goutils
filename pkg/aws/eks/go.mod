@@ -1,13 +1,13 @@
-module github.com/nabancard/goutils/pkg/aws/eks
+module github.com/paul-carlton/goutils/pkg/aws/eks
 
 go 1.23.2
 
 require (
 	github.com/aws/aws-sdk-go-v2/service/eks v1.53.0
 	github.com/aws/smithy-go v1.22.1
-	github.com/nabancard/goutils/pkg/aws v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/nabancard/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/aws v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
 	k8s.io/client-go v0.31.3
 	sigs.k8s.io/aws-iam-authenticator v0.6.28
 )
