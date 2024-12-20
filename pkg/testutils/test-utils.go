@@ -400,7 +400,7 @@ func CheckError(u TestUtil) bool {
 		panic("failed to cast expected to []string")
 	}
 
-	result := test.Results[len(test.Results)-1].(error).Error()
+	result := test.Results[len(test.Results)-1].(error).Error() //nolint: errcheck
 
 	if !ContainsStrings(expected, result) {
 		t.Fatalf("\nTest: %d, %s, error does not contain expected text\nGot.....: %s\nExpected: %s",

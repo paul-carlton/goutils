@@ -97,7 +97,7 @@ type Images interface {
 	GetLatestImage(repo, policy string) (string, error)
 	GetRunnerVersionLabel(imageName, imageTag string) (string, error)
 	ApplyPolicy(policy, tag string) bool
-	MaxImage(policy, current, new string) string
+	MaxImage(policy, current, newImage string) string
 }
 
 func NewImages(objParams *miscutils.NewObjParams, awsConfig aws.Config, httpClient *http.Client) Images {
@@ -335,17 +335,17 @@ func (e *images) ApplyPolicy(policy, tag string) bool {
 	return a
 }
 
-func (e *images) MaxImage(policy, current, new string) string {
+func (e *images) MaxImage(policy, current, newImage string) string {
 	logging.TraceCall()
 	defer logging.TraceExit()
 
-	if !e.ApplyPolicy(policy, new) {
+	if !e.ApplyPolicy(policy, newImage) {
 		return current
 	}
 
-	v, err := semver.NewVersion(new)
+	v, err := semver.NewVersion(newImage)
 	if err != nil {
-		e.o.Log.Log(e.o.Ctx, logging.LevelTrace, "failed to create new semver", "tag", new)
+		e.o.Log.Log(e.o.Ctx, logging.LevelTrace, "failed to create new semver", "tag", newImage)
 		return current
 	}
 

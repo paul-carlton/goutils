@@ -41,7 +41,7 @@ func TestGetObjLabel(t *testing.T) {
 
 		u.CallPrepFunc()
 
-		result := logging.SetSourceName(testData.Inputs[0].(slog.Attr))
+		result := logging.SetSourceName(testData.Inputs[0].(slog.Attr)) //nolint: errcheck
 		testData.Results = []interface{}{result}
 
 		return u.CallCheckFunc()
