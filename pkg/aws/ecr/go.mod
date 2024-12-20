@@ -5,10 +5,10 @@ go 1.23.2
 require (
 	github.com/Masterminds/semver/v3 v3.3.1
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.36.7
-	github.com/paul-carlton/goutils/pkg/aws v0.1.4-HOSPENG-11086-rc7
-	github.com/paul-carlton/goutils/pkg/httpclient v0.1.5
-	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/aws v1.0.0
+	github.com/paul-carlton/goutils/pkg/httpclient v1.0.0
+	github.com/paul-carlton/goutils/pkg/logging v1.0.0
+	github.com/paul-carlton/goutils/pkg/miscutils v1.0.0
 )
 
 require (
