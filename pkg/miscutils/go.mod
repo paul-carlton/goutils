@@ -10,7 +10,7 @@ replace github.com/paul-carlton/goutils/pkg/httpclient => ../httpclient
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/paul-carlton/goutils/pkg/logging v0.0.0-00010101000000-000000000000
+	github.com/paul-carlton/goutils/pkg/logging v1.0.0
 )
 
 require (

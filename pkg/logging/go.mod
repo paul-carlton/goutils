@@ -3,7 +3,7 @@ module github.com/paul-carlton/goutils/pkg/logging
 go 1.23.2
 
 require (
-	github.com/paul-carlton/goutils/pkg/testutils v0.1.4
+	github.com/paul-carlton/goutils/pkg/testutils v1.0.0
 	k8s.io/apimachinery v0.31.2
 )
 

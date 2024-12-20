@@ -11,8 +11,8 @@ replace github.com/paul-carlton/goutils/pkg/httpclient => ../httpclient
 replace github.com/paul-carlton/goutils/pkg/miscutils => ../miscutils
 
 require (
-	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v1.0.0
+	github.com/paul-carlton/goutils/pkg/miscutils v1.0.0
 )
 
 require (
