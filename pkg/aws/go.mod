@@ -7,8 +7,8 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.28.6
 	github.com/aws/aws-sdk-go-v2/service/sts v1.33.2
 	github.com/aws/smithy-go v1.22.1
-	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc6
+	github.com/paul-carlton/goutils/pkg/logging v1.0.0
+	github.com/paul-carlton/goutils/pkg/miscutils v1.0.0
 )
 
 require (

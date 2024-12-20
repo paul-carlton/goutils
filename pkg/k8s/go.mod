@@ -6,8 +6,8 @@ require (
 	github.com/fluxcd/kustomize-controller/api v1.4.0
 	github.com/fluxcd/pkg/apis/meta v1.6.1
 	github.com/fluxcd/source-controller/api v1.4.1
-	github.com/paul-carlton/goutils/pkg/logging v0.1.4-HOSPENG-11086-rc7
-	github.com/paul-carlton/goutils/pkg/miscutils v0.1.4-HOSPENG-11086-rc7
+	github.com/paul-carlton/goutils/pkg/logging v1.0.0
+	github.com/paul-carlton/goutils/pkg/miscutils v1.0.0
 	github.com/sykesm/zap-logfmt v0.0.4
 	go.uber.org/zap v1.26.0
 	k8s.io/api v0.31.3
